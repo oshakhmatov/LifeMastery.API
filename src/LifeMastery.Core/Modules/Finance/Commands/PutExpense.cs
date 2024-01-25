@@ -9,7 +9,7 @@ public sealed class PutExpenseRequest
     public decimal Amount { get; set; }
     public int? CategoryId { get; set; }
     public string? Note { get; set; }
-    public DateOnly Date { get; set; }
+    public DateTime Date { get; set; }
 }
 
 public sealed class PutExpense
@@ -36,7 +36,7 @@ public sealed class PutExpense
 
             expense.Note = request.Note;
             expense.Amount = request.Amount;
-            expense.Date = request.Date;
+            expense.Date = DateOnly.FromDateTime(request.Date);
 
             if (request.CategoryId is not null)
             {
@@ -51,9 +51,11 @@ public sealed class PutExpense
         }
         else
         {
-            var expense = new Expense(request.Amount);
-
-            expense.Note = request.Note;
+            var expense = new Expense(request.Amount)
+            {
+                Note = request.Note,
+                Date = DateOnly.FromDateTime(request.Date)
+            };
 
             if (request.CategoryId is not null)
             {
@@ -63,7 +65,6 @@ public sealed class PutExpense
             expenseRepository.Add(expense);
         }
         
-
         await unitOfWork.Commit();
     }
 }
