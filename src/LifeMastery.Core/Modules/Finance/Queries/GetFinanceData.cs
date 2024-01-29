@@ -33,7 +33,12 @@ public sealed class GetFinanceData
         return new FinanceViewModel
         {
             CurrentMonthTotal = MathHelper.Round(expenses.Select(e => e.Amount).Sum()),
-            Expenses = expenses.Select(ExpenseDto.FromModel).ToArray(),
+            DailyExpenses = expenses.GroupBy(e => e.Date).Select(g => new DailyExpensesDto
+            {
+                Date = g.Key.ToString("dd.MM.yyyy"),
+                Expenses = g.Select(ExpenseDto.FromModel).ToArray()
+
+            }).ToArray(),
             ExpenseCategories = expenseCategories.Select(ExpenseCategoryDto.FromModel).ToArray(),
             RegularPayments = regularPayments.Select(RegularPaymentDto.FromModel).ToArray(),
             EmailSubscriptions = emailSubscriptions.Select(EmailSubscriptionDto.FromModel).ToArray()
