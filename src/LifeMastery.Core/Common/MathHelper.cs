@@ -6,4 +6,9 @@ public static class MathHelper
     {
         return Math.Round(value, 1);
     }
+
+    public static decimal Round(decimal value)
+    {
+        return Math.Round(value, 1);
+    }
 }

@@ -3,6 +3,7 @@ using System;
 using LifeMastery.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeMastery.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240128152313_AddEmailSubscriptions")]
+    partial class AddEmailSubscriptions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,9 +64,6 @@ namespace LifeMastery.Infrastructure.Migrations
                         .HasColumnType("date")
                         .HasDefaultValueSql("CURRENT_DATE");
 
-                    b.Property<int?>("EmailSubscriptionId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Note")
                         .HasColumnType("text");
 
@@ -73,8 +73,6 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("EmailSubscriptionId");
 
                     b.ToTable("Expenses");
                 });
@@ -249,13 +247,7 @@ namespace LifeMastery.Infrastructure.Migrations
                         .WithMany("Expenses")
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", "EmailSubscription")
-                        .WithMany("Expenses")
-                        .HasForeignKey("EmailSubscriptionId");
-
                     b.Navigation("Category");
-
-                    b.Navigation("EmailSubscription");
                 });
 
             modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCreationRule", b =>
@@ -282,8 +274,6 @@ namespace LifeMastery.Infrastructure.Migrations
 
             modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", b =>
                 {
-                    b.Navigation("Expenses");
-
                     b.Navigation("Rules");
                 });
 

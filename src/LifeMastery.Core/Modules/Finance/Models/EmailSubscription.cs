@@ -11,6 +11,9 @@ public class EmailSubscription
     private readonly IList<ExpenseCreationRule> rules;
     public IReadOnlyCollection<ExpenseCreationRule> Rules => new ReadOnlyCollection<ExpenseCreationRule>(rules);
 
+    private readonly IList<Expense> expenses;
+    public IReadOnlyCollection<Expense> Expenses => new ReadOnlyCollection<Expense>(expenses);
+
     protected EmailSubscription() { }
 
     public EmailSubscription(string email, bool isActive)

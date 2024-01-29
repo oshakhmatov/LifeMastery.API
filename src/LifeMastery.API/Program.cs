@@ -1,7 +1,17 @@
 using LifeMastery.Application;
 using LifeMastery.Infrastructure.Services.Abstractions;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var ruCultureName = "ru-RU";
+CultureInfo.CurrentCulture = new CultureInfo(ruCultureName);
+CultureInfo.CurrentUICulture = new CultureInfo(ruCultureName);
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(ruCultureName);
+});
 
 builder.Services.AddApplication(builder.Configuration);
 

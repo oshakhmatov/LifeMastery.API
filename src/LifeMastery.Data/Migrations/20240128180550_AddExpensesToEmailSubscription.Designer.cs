@@ -3,6 +3,7 @@ using System;
 using LifeMastery.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeMastery.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240128180550_AddExpensesToEmailSubscription")]
+    partial class AddExpensesToEmailSubscription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -249,13 +252,11 @@ namespace LifeMastery.Infrastructure.Migrations
                         .WithMany("Expenses")
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", "EmailSubscription")
+                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", null)
                         .WithMany("Expenses")
                         .HasForeignKey("EmailSubscriptionId");
 
                     b.Navigation("Category");
-
-                    b.Navigation("EmailSubscription");
                 });
 
             modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCreationRule", b =>

@@ -8,6 +8,7 @@ public class Expense
     public string? Note { get; set; }
     public DateOnly Date { get; set; }
     public string? Source { get; set; }
+    public EmailSubscription? EmailSubscription { get; set; }
 
     protected Expense() { }
 

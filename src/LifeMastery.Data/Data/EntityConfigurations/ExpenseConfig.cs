@@ -11,5 +11,6 @@ public sealed class ExpenseConfig : IEntityTypeConfiguration<Expense>
         builder.HasKey(e => e.Id);
         builder.Property(e => e.Date).HasColumnType("date").HasDefaultValueSql("CURRENT_DATE");
         builder.HasOne(e => e.Category).WithMany(ec => ec.Expenses);
+        builder.HasOne(e => e.EmailSubscription).WithMany(es => es.Expenses);
     }
 }

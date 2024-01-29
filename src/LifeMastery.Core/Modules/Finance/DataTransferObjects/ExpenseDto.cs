@@ -10,6 +10,7 @@ public class ExpenseDto
     public int? CategoryId { get; set; }
     public string? CategoryName { get; set; }
     public string? Note { get; set; }
+    public string? Source { get; set; }
 
     public static ExpenseDto FromModel(Expense expense)
     {
@@ -20,7 +21,8 @@ public class ExpenseDto
             CategoryId = expense.Category?.Id,
             CategoryName = expense.Category?.Name,
             Note = expense.Note,
-            Date = expense.Date
+            Date = expense.Date,
+            Source = expense.Source
         };
     }
 }

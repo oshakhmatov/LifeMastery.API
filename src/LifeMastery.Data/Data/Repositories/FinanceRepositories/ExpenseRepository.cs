@@ -22,7 +22,8 @@ public sealed class ExpenseRepository : RepositoryBase<Expense>, IExpenseReposit
     {
         return await dbContext.Expenses
             .Include(e => e.Category)
-            .OrderByDescending(e => e.Id)
+            .OrderByDescending(e => e.Date)
+            .ThenByDescending(e => e.Id)
             .ToArrayAsync();
     }
 }

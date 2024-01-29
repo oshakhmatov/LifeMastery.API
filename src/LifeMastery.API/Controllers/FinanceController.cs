@@ -10,9 +10,10 @@ public class FinanceController : ApiControllerBase
 {
     [HttpGet]
     public async Task<FinanceViewModel> GetFinanceData(
-        [FromServices] GetFinanceData getExpenses)
+        [FromServices] GetFinanceData getExpenses,
+        CancellationToken cancellationToken)
     {
-        return await getExpenses.Execute();
+        return await getExpenses.Execute(cancellationToken);
     }
 
     [HttpPut("expenses")]
@@ -22,6 +23,22 @@ public class FinanceController : ApiControllerBase
     {
         await putExpense.Execute(request);
         return Ok();
+    }
+
+    [HttpPost("expenses/update")]
+    public async Task UpdateExpenses(
+        [FromServices] UpdateExpenses updateExpenses,
+        CancellationToken cancellationToken)
+    {
+        await updateExpenses.Execute(cancellationToken);
+    }
+
+    [HttpPost("expenses/load")]
+    public async Task LoadExpenses(
+        [FromServices] LoadExpenses loadExpenses,
+        CancellationToken cancellationToken)
+    {
+        await loadExpenses.Execute(cancellationToken);
     }
 
     [HttpDelete("expenses/{id}")]

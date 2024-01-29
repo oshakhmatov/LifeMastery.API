@@ -20,45 +20,45 @@ public class EmailProvider : IEmailProvider
         options = optionsSnapshot.Value;
     }
 
-    public async Task<EmailMessage[]> GetMessages(string subject)
+    public async Task<EmailMessage[]> GetMessages(string sender, CancellationToken cancellationToken)
     {
         using var client = new ImapClient();
 
-        await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect);
-        await client.AuthenticateAsync(options.UserName, options.Password);
+        await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect, cancellationToken: cancellationToken);
+        await client.AuthenticateAsync(options.UserName, options.Password, cancellationToken);
 
         var inbox = client.Inbox;
-        await inbox.OpenAsync(FolderAccess.ReadOnly);
+        await inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
 
-        var uids = await inbox.SearchAsync(SearchQuery.SubjectContains(subject));
+        var uids = await inbox.SearchAsync(SearchQuery.FromContains(sender), cancellationToken);
 
         var emailMessages = ParseMessages(inbox, uids).ToArray();
 
-        await client.DisconnectAsync(quit: true);
+        await client.DisconnectAsync(quit: true, cancellationToken: cancellationToken);
 
         return emailMessages;
     }
 
-    public async Task RemoveMessages(string subject)
+    public async Task RemoveMessages(string sender, CancellationToken cancellationToken)
     {
         using var client = new ImapClient();
 
-        await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect);
-        await client.AuthenticateAsync(options.UserName, options.Password);
+        await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect, cancellationToken: cancellationToken);
+        await client.AuthenticateAsync(options.UserName, options.Password, cancellationToken);
 
         var inbox = client.Inbox;
-        await inbox.OpenAsync(FolderAccess.ReadWrite);
+        await inbox.OpenAsync(FolderAccess.ReadWrite, cancellationToken);
 
-        var uids = await inbox.SearchAsync(SearchQuery.SubjectContains(subject));
+        var uids = await inbox.SearchAsync(SearchQuery.FromContains(sender), cancellationToken);
 
         foreach (var uid in uids)
         {
-            inbox.AddFlags(uid, MessageFlags.Deleted, silent: true);
+            inbox.AddFlags(uid, MessageFlags.Deleted, silent: true, cancellationToken: cancellationToken);
         }
 
-        await inbox.ExpungeAsync();
+        await inbox.ExpungeAsync(cancellationToken);
 
-        await client.DisconnectAsync(quit: true);
+        await client.DisconnectAsync(quit: true, cancellationToken: cancellationToken);
     }
 
     static IEnumerable<EmailMessage> ParseMessages(IMailFolder inbox, IList<UniqueId> messageIds)

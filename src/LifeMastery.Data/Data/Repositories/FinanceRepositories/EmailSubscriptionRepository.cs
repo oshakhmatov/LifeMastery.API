@@ -24,4 +24,23 @@ public class EmailSubscriptionRepository : RepositoryBase<EmailSubscription>, IE
             .Include(es => es.Rules)
             .ToArrayAsync(cancellationToken: token);
     }
+
+    public async Task<EmailSubscription[]> ListActive(CancellationToken token)
+    {
+        return await dbContext.EmailSubscriptions
+            .Include(es => es.Rules)
+            .ThenInclude(r => r.Category)
+            .Where(es => es.IsActive)
+            .ToArrayAsync(cancellationToken: token);
+    }
+
+    public async Task<EmailSubscription[]> ListActiveWithExpenses(CancellationToken token)
+    {
+        return await dbContext.EmailSubscriptions
+            .Include(es => es.Expenses)
+            .Include(es => es.Rules)
+            .ThenInclude(r => r.Category)
+            .Where(es => es.IsActive)
+            .ToArrayAsync(cancellationToken: token);
+    }
 }

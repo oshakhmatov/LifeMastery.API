@@ -19,7 +19,8 @@ public sealed class EmailHandlerHostedService : BackgroundService
         {
             using var scope = serviceScopeFactory.CreateScope();
             var emailHandler = scope.ServiceProvider.GetRequiredService<EmailHandler>();
-            await emailHandler.HandleInbox();
+
+            await emailHandler.HandleInbox(stoppingToken);
 
             await Task.Delay(TimeSpan.FromHours(6), stoppingToken);
         }

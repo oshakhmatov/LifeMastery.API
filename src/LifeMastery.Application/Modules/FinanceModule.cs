@@ -20,8 +20,7 @@ public static class FinanceModule
             .Configure<EmailHandlerServiceOptions>(configuration.GetSection(nameof(EmailHandlerServiceOptions)))
             .AddHostedService<EmailHandlerHostedService>()
             .AddTransient<EmailHandler>()
-            .AddTransient<ExpenseParser>()
-            .AddTransient<IExpenseCategoryResolver, ExpenseCategoryResolver>()
+            .AddTransient<IExpenseParser, RaiffeisenExpenseParser>()
             .AddTransient<IEmailProvider, EmailProvider>()
             .AddScoped<IExpenseRepository, ExpenseRepository>()
             .AddScoped<IExpenseCategoryRepository, ExpenseCategoryRepository>()
@@ -29,10 +28,16 @@ public static class FinanceModule
             .AddScoped<IEmailSubscriptionRepository, EmailSubscriptionRepository>()
             .AddScoped<GetFinanceData>()
             .AddScoped<PutExpense>()
+            .AddScoped<UpdateExpenses>()
+            .AddScoped<LoadExpenses>()
             .AddScoped<RemoveExpense>()
             .AddScoped<PutExpenseCategory>()
             .AddScoped<RemoveExpenseCategory>()
             .AddScoped<PutRegularPayment>()
-            .AddScoped<RemoveRegularPayment>();
+            .AddScoped<RemoveRegularPayment>()
+            .AddScoped<PutEmailSubscription>()
+            .AddScoped<PutExpenseCreationRule>()
+            .AddScoped<RemoveExpenseCreationRule>()
+            .AddScoped<RemoveEmailSubscription>();
     }
 }
