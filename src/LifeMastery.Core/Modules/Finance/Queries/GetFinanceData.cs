@@ -29,6 +29,10 @@ public sealed class GetFinanceData
         var expenseCategories = await expenseCategoryRepository.List();
         var regularPayments = await regularPaymentRepository.List();
         var emailSubscriptions = await emailSubscriptionRepository.List(cancellationToken);
+        var categorizedExpenses = expenses
+            .Where(e => e.Category is not null)
+            .GroupBy(e => e.Category!.Name)
+            .OrderByDescending(g => g.Select(e => e.Amount).Sum());
 
         return new FinanceViewModel
         {
@@ -41,7 +45,12 @@ public sealed class GetFinanceData
             }).ToArray(),
             ExpenseCategories = expenseCategories.Select(ExpenseCategoryDto.FromModel).ToArray(),
             RegularPayments = regularPayments.Select(RegularPaymentDto.FromModel).ToArray(),
-            EmailSubscriptions = emailSubscriptions.Select(EmailSubscriptionDto.FromModel).ToArray()
+            EmailSubscriptions = emailSubscriptions.Select(EmailSubscriptionDto.FromModel).ToArray(),
+            ExpenseChart = new ExpenseChartDto
+            {
+                Labels = categorizedExpenses.Select(e => e.Key).ToArray(),
+                Values = categorizedExpenses.Select(e => (long) e.Select(e => e.Amount).Sum()).ToArray(),
+            }
         };
     }
 }

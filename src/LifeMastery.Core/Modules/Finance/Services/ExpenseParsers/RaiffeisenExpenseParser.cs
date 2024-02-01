@@ -13,7 +13,7 @@ public sealed partial class RaiffeisenExpenseParser : IExpenseParser
         if (place == "RAIFFEISEN BANK NOVI SAD RS")
             return null;
 
-        var amount = Decimal.Parse(AmountRegex().Match(content).Groups[1].Value.Replace(".", ""), CultureInfo.CurrentCulture);
+        var amount = Decimal.Parse(AmountRegex().Match(content).Groups[1].Value.Replace(".", ""), new CultureInfo("ru-RU"));
         var date = DateOnly.ParseExact(DateRegex().Match(content).Groups[1].Value, "dd.MM.yyyy");
 
         return new ParsedExpenseDto()

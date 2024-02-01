@@ -7,4 +7,5 @@ public sealed class FinanceViewModel
     public ExpenseCategoryDto[] ExpenseCategories { get; set; }
     public RegularPaymentDto[] RegularPayments { get; set; }
     public EmailSubscriptionDto[] EmailSubscriptions { get; set; }
+    public ExpenseChartDto? ExpenseChart { get; set; }
 }
