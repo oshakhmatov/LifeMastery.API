@@ -4,6 +4,12 @@ using LifeMastery.Core.Modules.Finance.Repositories;
 
 namespace LifeMastery.Core.Modules.Finance.Queries;
 
+public sealed class GetFinanceDataRequest
+{
+    public int? Year { get; set; }
+    public int? Month { get; set; }
+}
+
 public sealed class GetFinanceData
 {
     private readonly IExpenseRepository expenseRepository;
@@ -23,32 +29,26 @@ public sealed class GetFinanceData
         this.emailSubscriptionRepository = emailSubscriptionRepository;
     }
 
-    public async Task<FinanceViewModel> Execute(CancellationToken cancellationToken)
+    public async Task<FinanceViewModel> Execute(GetFinanceDataRequest request, CancellationToken cancellationToken)
     {
-        var today = DateOnly.FromDateTime(DateTime.UtcNow);
-        var prevMonth = today.AddMonths(-1).Month;
-        var year = prevMonth == 12 ? today.AddYears(-1).Year : today.Year;
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var year = request.Year ?? today.Year;
+        var month = request.Month ?? today.Month;
 
-        var firstDayOfPrevMonth = new DateOnly(year, prevMonth, 1);
-        var expenses = await expenseRepository.List(firstDayOfPrevMonth);
+        var expenseMonths = await expenseRepository.GetExpenseMonths();
+        var expenses = await expenseRepository.List(year, month);
         var expenseCategories = await expenseCategoryRepository.List();
         var regularPayments = await regularPaymentRepository.List(cancellationToken);
         var emailSubscriptions = await emailSubscriptionRepository.List(cancellationToken);
-        var prevMonthExpenses = expenses
-            .Where(e => e.Date.Month == prevMonth)
-            .ToList();
-        var currentMonthExpenses = expenses
-            .Where(e => e.Date.Month == today.Month)
-            .ToList();
-        var categorizedExpenses = currentMonthExpenses
+
+        var categorizedExpenses = expenses
             .Where(e => e.Category is not null)
             .GroupBy(e => e.Category!.Name)
             .OrderByDescending(g => g.Select(e => e.Amount).Sum());
 
         return new FinanceViewModel
         {
-            PrevMonthTotal = MathHelper.Round(prevMonthExpenses.Select(e => e.Amount).Sum()),
-            CurrentMonthTotal = MathHelper.Round(currentMonthExpenses.Select(e => e.Amount).Sum()),
+            MonthTotal = MathHelper.Round(expenses.Select(e => e.Amount).Sum()),
             DailyExpenses = expenses.GroupBy(e => e.Date).Select(g => new DailyExpensesDto
             {
                 Date = g.Key.ToString("dd.MM.yyyy"),
@@ -62,7 +62,14 @@ public sealed class GetFinanceData
             {
                 Labels = categorizedExpenses.Select(e => e.Key).ToArray(),
                 Values = categorizedExpenses.Select(e => (long) e.Select(e => e.Amount).Sum()).ToArray(),
-            }
+            },
+            CurrentExpenseMonth = Array.IndexOf(expenseMonths, expenseMonths.FirstOrDefault(e => e.Year == year && e.Month == month)),
+            ExpenseMonths = expenseMonths.Select(e => new ExpenseMonthDto
+            {
+                Month = e.Month,
+                Year = e.Year,
+                Name = $"{DateHelper.GetMonthName(e.Month)} {e.Year}"
+            }).ToArray(),
         };
     }
 }

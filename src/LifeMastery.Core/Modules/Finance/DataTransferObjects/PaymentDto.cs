@@ -1,5 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Models;
-using System.Globalization;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.Models;
 
 namespace LifeMastery.Core.Modules.Finance.DataTransferObjects;
 
@@ -34,12 +34,6 @@ public class PaymentDto
             return periodYear.ToString();
         }
 
-        return $"{GetMonthName(periodMonth.Value)} {periodYear}";
-    }
-
-    private static string GetMonthName(int month)
-    {
-        var culture = new CultureInfo("ru-RU");
-        return culture.DateTimeFormat.GetMonthName(month);
+        return $"{DateHelper.GetMonthName(periodMonth.Value)} {periodYear}";
     }
 }

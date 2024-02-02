@@ -11,9 +11,10 @@ public class FinanceController : ApiControllerBase
     [HttpGet]
     public async Task<FinanceViewModel> GetFinanceData(
         [FromServices] GetFinanceData getExpenses,
+        [FromQuery] GetFinanceDataRequest request,
         CancellationToken cancellationToken)
     {
-        return await getExpenses.Execute(cancellationToken);
+        return await getExpenses.Execute(request, cancellationToken);
     }
 
     [HttpPut("expenses")]

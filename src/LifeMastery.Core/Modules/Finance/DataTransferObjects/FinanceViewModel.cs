@@ -2,8 +2,9 @@
 
 public sealed class FinanceViewModel
 {
-    public decimal PrevMonthTotal { get; set; }
-    public decimal CurrentMonthTotal { get; set; }
+    public decimal MonthTotal { get; set; }
+    public int CurrentExpenseMonth { get; set; }
+    public ExpenseMonthDto[] ExpenseMonths { get; set; }
     public DailyExpensesDto[] DailyExpenses { get; set; }
     public ExpenseCategoryDto[] ExpenseCategories { get; set; }
     public RegularPaymentDto[] RegularPayments { get; set; }
