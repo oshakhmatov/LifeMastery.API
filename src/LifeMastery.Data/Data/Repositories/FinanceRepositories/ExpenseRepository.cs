@@ -26,10 +26,11 @@ public sealed class ExpenseRepository : RepositoryBase<Expense>, IExpenseReposit
             .FirstOrDefaultAsync();
     }
 
-    public async Task<Expense[]> List()
+    public async Task<Expense[]> List(DateOnly dateFrom)
     {
         return await dbContext.Expenses
             .Include(e => e.Category)
+            .Where(e => e.Date >= dateFrom)
             .OrderByDescending(e => e.Date)
             .ThenByDescending(e => e.Id)
             .ToArrayAsync();

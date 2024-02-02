@@ -8,6 +8,6 @@ public interface IExpenseRepository
     public void Update(Expense expense);
     public void Remove(Expense expense);
     public Task<Expense?> Get(int id);
-    public Task<Expense[]> List();
+    public Task<Expense[]> List(DateOnly dateFrom);
     Task<Expense?> GetBySource(string source);
 }
