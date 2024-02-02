@@ -9,4 +9,5 @@ public interface IExpenseRepository
     public void Remove(Expense expense);
     public Task<Expense?> Get(int id);
     public Task<Expense[]> List();
+    Task<Expense?> GetBySource(string source);
 }

@@ -18,6 +18,14 @@ public sealed class ExpenseRepository : RepositoryBase<Expense>, IExpenseReposit
             .FirstOrDefaultAsync();
     }
 
+    public async Task<Expense?> GetBySource(string source)
+    {
+        return await dbContext.Expenses
+            .Include(e => e.Category)
+            .Where(e => e.Source == source)
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<Expense[]> List()
     {
         return await dbContext.Expenses

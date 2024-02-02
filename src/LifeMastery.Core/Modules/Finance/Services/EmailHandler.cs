@@ -39,27 +39,31 @@ public class EmailHandler
 
             foreach (var content in contents)
             {
+                var existingExpense = expenseRepository.GetBySource(content);
+                if (existingExpense != null)
+                    continue;
+
                 var parsedExpense = expenseParser.Parse(content);
-                if (parsedExpense != null)
+                if (parsedExpense == null)
+                    continue;
+
+                var expense = new Expense(parsedExpense.Amount)
                 {
-                    var expense = new Expense(parsedExpense.Amount)
-                    {
-                        Source = content,
-                        Date = parsedExpense.Date,
-                        EmailSubscription = emailSubscription
-                    };
+                    Source = content,
+                    Date = parsedExpense.Date,
+                    EmailSubscription = emailSubscription
+                };
 
-                    if (emailSubscription.Rules.Count != 0)
+                if (emailSubscription.Rules.Count != 0)
+                {
+                    var rule = emailSubscription.Rules.FirstOrDefault(r => r.Place == parsedExpense.Place);
+                    if (rule != null)
                     {
-                        var rule = emailSubscription.Rules.FirstOrDefault(r => r.Place == parsedExpense.Place);
-                        if (rule != null)
-                        {
-                            expense.Category = rule.Category;
-                        }
+                        expense.Category = rule.Category;
                     }
-
-                    expenseRepository.Add(expense);
                 }
+
+                expenseRepository.Add(expense);
             }
         }
 
