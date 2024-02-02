@@ -12,7 +12,7 @@ public class EmailSubscription
     public IReadOnlyCollection<ExpenseCreationRule> Rules => new ReadOnlyCollection<ExpenseCreationRule>(rules);
 
     private readonly IList<Expense> expenses;
-    public IReadOnlyCollection<Expense> Expenses => new ReadOnlyCollection<Expense>(expenses);
+    public IReadOnlyCollection<Expense> Expenses => expenses.AsReadOnly();
 
     protected EmailSubscription() { }
 
@@ -24,10 +24,8 @@ public class EmailSubscription
 
     public ExpenseCreationRule GetRule(int expenseCreationRuleId)
     {
-        var rule = Rules.FirstOrDefault(r => r.Id == expenseCreationRuleId) 
+        return Rules.FirstOrDefault(r => r.Id == expenseCreationRuleId) 
             ?? throw new Exception($"Expense creation rule with ID='{expenseCreationRuleId}' was not found.");
-
-        return rule;
     }
 
     public void AddRule(ExpenseCreationRule rule)

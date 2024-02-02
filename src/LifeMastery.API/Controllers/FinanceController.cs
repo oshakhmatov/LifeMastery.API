@@ -68,33 +68,37 @@ public class FinanceController : ApiControllerBase
     [HttpPut("regular-payments")]
     public async Task PutRegularPayment(
         [FromServices] PutRegularPayment putRegularPayment,
-        [FromBody] PutRegularPaymentRequest request)
+        [FromBody] PutRegularPaymentRequest request,
+        CancellationToken cancellationToken)
     {
-        await putRegularPayment.Execute(request);
+        await putRegularPayment.Execute(request, cancellationToken);
     }
 
     [HttpDelete("regular-payments/{id}")]
     public async Task RemoveRegularPayment(
         [FromServices] RemoveRegularPayment removeRegularPayment,
-        int id)
+        int id,
+        CancellationToken cancellationToken)
     {
-        await removeRegularPayment.Execute(id);
+        await removeRegularPayment.Execute(id, cancellationToken);
     }
 
     [HttpPut("email-subscriptions")]
     public async Task PutEmailSubscription(
         [FromServices] PutEmailSubscription putEmailSubscription,
-        [FromBody] PutEmailSubscriptionRequest request)
+        [FromBody] PutEmailSubscriptionRequest request,
+        CancellationToken cancellationToken)
     {
-        await putEmailSubscription.Execute(request);
+        await putEmailSubscription.Execute(request, cancellationToken);
     }
 
     [HttpDelete("email-subscriptions/{id}")]
     public async Task RemoveEmailSubscription(
         [FromServices] RemoveEmailSubscription removeEmailSubscription,
-        int id)
+        int id,
+        CancellationToken cancellationToken)
     {
-        await removeEmailSubscription.Execute(id);
+        await removeEmailSubscription.Execute(id, cancellationToken);
     }
 
     [HttpPut("expense-creation-rules")]
@@ -113,5 +117,23 @@ public class FinanceController : ApiControllerBase
         CancellationToken token)
     {
         await removeExpenseCreationRule.Execute(request, token);
+    }
+
+    [HttpPut("payments")]
+    public async Task PutPayment(
+        [FromServices] PutPayment putPayment,
+        [FromBody] PutPaymentRequest request,
+        CancellationToken token)
+    {
+        await putPayment.Execute(request, token);
+    }
+
+    [HttpDelete("payments")]
+    public async Task RemovePayment(
+        [FromServices] RemovePayment removePayment,
+        [FromBody] RemovePaymentRequest request,
+        CancellationToken token)
+    {
+        await removePayment.Execute(request, token);
     }
 }

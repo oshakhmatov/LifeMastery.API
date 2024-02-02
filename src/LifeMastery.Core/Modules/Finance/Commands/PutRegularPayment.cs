@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Enums;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.Enums;
 using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
@@ -15,30 +16,25 @@ public sealed class PutRegularPaymentRequest
     public bool IsAdvanced { get; set; }
 }
 
-public sealed class PutRegularPayment
+public sealed class PutRegularPayment : CommandBase<PutRegularPaymentRequest>
 {
     private readonly IRegularPaymentRepository regularPaymentRepository;
-    private readonly IUnitOfWork unitOfWork;
-
-    public PutRegularPayment(
-        IRegularPaymentRepository regularPaymentRepository,
-        IUnitOfWork unitOfWork)
+    public PutRegularPayment(IUnitOfWork unitOfWork, IRegularPaymentRepository regularPaymentRepository) : base(unitOfWork)
     {
         this.regularPaymentRepository = regularPaymentRepository;
-        this.unitOfWork = unitOfWork;
     }
 
-    public async Task Execute(PutRegularPaymentRequest request)
+    protected override async Task OnExecute(PutRegularPaymentRequest request, CancellationToken token)
     {
         if (request.Id.HasValue)
         {
-            var regularPayment = await regularPaymentRepository.Get(request.Id.Value);
-            if (regularPayment == null)
-                throw new Exception($"Regular payment with ID '{request.Id}' was not found.");
+            var regularPayment = await regularPaymentRepository.Get(request.Id.Value, token)
+                ?? throw new Exception($"Regular payment with ID '{request.Id}' was not found.");
 
             regularPayment.Period = request.Period;
             regularPayment.Name = request.Name;
             regularPayment.Amount = request.Amount;
+            regularPayment.IsAdvanced = request.IsAdvanced;
             regularPayment.SetDeadline(request.DeadlineDay, request.DeadlineMonth);
 
             regularPaymentRepository.Update(regularPayment);
@@ -53,7 +49,5 @@ public sealed class PutRegularPayment
                 request.DeadlineMonth,
                 request.Amount));
         }
-
-        await unitOfWork.Commit();
     }
 }

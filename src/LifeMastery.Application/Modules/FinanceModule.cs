@@ -38,6 +38,8 @@ public static class FinanceModule
             .AddScoped<PutEmailSubscription>()
             .AddScoped<PutExpenseCreationRule>()
             .AddScoped<RemoveExpenseCreationRule>()
-            .AddScoped<RemoveEmailSubscription>();
+            .AddScoped<RemoveEmailSubscription>()
+            .AddScoped<PutPayment>()
+            .AddScoped<RemovePayment>();
     }
 }

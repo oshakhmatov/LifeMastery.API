@@ -3,6 +3,7 @@ using System;
 using LifeMastery.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeMastery.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240202122726_PaymentAddPeriodIndex")]
+    partial class PaymentAddPeriodIndex
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -137,10 +140,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
 
-                    b.Property<int?>("PeriodMonth")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("PeriodYear")
+                    b.Property<int>("PeriodIndex")
                         .HasColumnType("integer");
 
                     b.Property<int?>("RegularPaymentId")

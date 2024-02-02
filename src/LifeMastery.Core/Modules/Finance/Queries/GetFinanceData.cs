@@ -32,7 +32,7 @@ public sealed class GetFinanceData
         var firstDayOfPrevMonth = new DateOnly(year, prevMonth, 1);
         var expenses = await expenseRepository.List(firstDayOfPrevMonth);
         var expenseCategories = await expenseCategoryRepository.List();
-        var regularPayments = await regularPaymentRepository.List();
+        var regularPayments = await regularPaymentRepository.List(cancellationToken);
         var emailSubscriptions = await emailSubscriptionRepository.List(cancellationToken);
         var prevMonthExpenses = expenses
             .Where(e => e.Date.Month == prevMonth)

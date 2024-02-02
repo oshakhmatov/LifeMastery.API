@@ -10,19 +10,19 @@ public sealed class RegularPaymentRepository : RepositoryBase<RegularPayment>, I
     {
     }
 
-    public async Task<RegularPayment?> Get(int id)
+    public async Task<RegularPayment?> Get(int id, CancellationToken token)
     {
         return await dbContext.RegularPayments
             .Where(e => e.Id == id)
             .Include(e => e.Payments)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(token);
     }
 
-    public async Task<RegularPayment[]> List()
+    public async Task<RegularPayment[]> List(CancellationToken token)
     {
         return await dbContext.RegularPayments
             .Include(e => e.Payments)
             .OrderByDescending(e => e.Id)
-            .ToArrayAsync();
+            .ToArrayAsync(token);
     }
 }
