@@ -1,6 +1,7 @@
 ﻿using LifeMastery.Core.Modules.WeightControl.DataTransferObjects;
 using LifeMastery.Core.Modules.WeightControl.Repositories;
 using LifeMastery.Core.Modules.WeightControl.Services.Abstractions;
+using System.Globalization;
 
 namespace LifeMastery.Core.Modules.WeightControl.Queries;
 
@@ -35,12 +36,13 @@ public sealed class GetWeightControlData
         {
             result.WeightChart = new WeightChartDto
             {
-                Labels = lastWeightRecords.Select(r => r.Date.ToString("d MMMM")).ToArray(),
+                Labels = lastWeightRecords.Select(r => r.Date.ToString("d MMMM", new CultureInfo("ru-RU"))).ToArray(),
                 Values = lastWeightRecords.Select(r => r.Weight).ToArray()
             };
 
             result.WeightRecords = lastWeightRecords
                 .Reverse()
+                .Take(30)
                 .Select(WeightRecordDto.FromModel)
                 .ToArray();
         }
