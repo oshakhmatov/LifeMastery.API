@@ -39,7 +39,7 @@ public class EmailHandler
 
             foreach (var content in contents)
             {
-                var existingExpense = expenseRepository.GetBySource(content);
+                var existingExpense = await expenseRepository.GetBySource(content);
                 if (existingExpense != null)
                     continue;
 
