@@ -11,11 +11,15 @@ public sealed class RegularPaymentDto
     public Period Period { get; set; }
     public int? DeadlineDay { get; set; }
     public int? DeadlineMonth { get; set; }
+    public int? PayFromDay { get; set; }
     public bool IsAdvanced { get; set; }
     public bool IsPaid { get; set; }
     public PaymentDto[] Payments { get; set; }
+}
 
-    public static RegularPaymentDto FromModel(RegularPayment regularPayment)
+public static class RegularPaymentProjection
+{
+    public static RegularPaymentDto ToDto(this RegularPayment regularPayment)
     {
         return new RegularPaymentDto
         {
@@ -24,9 +28,10 @@ public sealed class RegularPaymentDto
             IsAdvanced = regularPayment.IsAdvanced,
             Amount = regularPayment.Amount,
             Period = regularPayment.Period,
-            IsPaid = regularPayment.GetIsPaid(),
+            IsPaid = regularPayment.IsPaid(),
             DeadlineDay = regularPayment.DeadlineDay,
             DeadlineMonth = regularPayment.DeadlineMonth,
+            PayFromDay = regularPayment.PayFromDay,
             Payments = regularPayment.Payments.Select(p => PaymentDto.FromModel(p, regularPayment.Id)).ToArray()
         };
     }

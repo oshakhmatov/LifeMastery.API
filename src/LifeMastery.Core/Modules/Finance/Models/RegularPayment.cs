@@ -10,19 +10,23 @@ public class RegularPayment
     public Period Period { get; set; }
     public int? DeadlineDay { get; private set; }
     public int? DeadlineMonth { get; private set; }
+    public int? PayFromDay { get; set; }
     public bool IsAdvanced { get; set; }
 
     private readonly IList<Payment> payments;
     public IReadOnlyCollection<Payment> Payments => payments.AsReadOnly();
 
+    
+
     protected RegularPayment() { }
 
-    public RegularPayment(string name, bool isAdvanced, Period period, int? deadlineDay, int? deadlineMonth, decimal? amount)
+    public RegularPayment(string name, bool isAdvanced, Period period, int? deadlineDay, int? deadlineMonth, decimal? amount, int? payFromDay)
     {
         Name = name;
         Amount = amount;
         Period = period;
         IsAdvanced = isAdvanced;
+        PayFromDay = payFromDay;
 
         SetDeadline(deadlineDay, deadlineMonth);
     }
@@ -58,14 +62,18 @@ public class RegularPayment
         payments.Remove(rule);
     }
 
-    public bool GetIsPaid()
+    public bool IsPaid()
     {
-        if (payments.Count == 0)
-            return false;
-
         var today = DateTime.UtcNow;
+        var currentDay = today.Day;
         var currentMonth = today.Month;
         var currentYear = today.Year;
+
+        if (PayFromDay is not null && currentDay < PayFromDay)
+            return true;
+
+        if (payments.Count == 0)
+            return false;
 
         if (IsAdvanced)
         {

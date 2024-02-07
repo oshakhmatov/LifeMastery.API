@@ -56,7 +56,7 @@ public sealed class GetFinanceData
 
             }).ToArray(),
             ExpenseCategories = expenseCategories.Select(ExpenseCategoryDto.FromModel).ToArray(),
-            RegularPayments = regularPayments.Select(RegularPaymentDto.FromModel).ToArray(),
+            RegularPayments = regularPayments.Select(rp => rp.ToDto()).ToArray(),
             EmailSubscriptions = emailSubscriptions.Select(EmailSubscriptionDto.FromModel).ToArray(),
             ExpenseChart = new ExpenseChartDto
             {
