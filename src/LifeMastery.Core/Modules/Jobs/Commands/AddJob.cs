@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Jobs.Enums;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Jobs.Enums;
 using LifeMastery.Core.Modules.Jobs.Models;
 using LifeMastery.Core.Modules.Jobs.Repositories;
 
@@ -9,25 +10,23 @@ public sealed class AddJobRequest
     public string Name { get; set; }
 }
 
-public sealed class AddJob
+public sealed class AddJob : CommandBase<AddJobRequest>
 {
     private readonly IJobRepository jobRepository;
-    private readonly IUnitOfWork unitOfWork;
 
-    public AddJob(IJobRepository jobRepository, IUnitOfWork unitOfWork)
+    public AddJob(IUnitOfWork unitOfWork, IJobRepository jobRepository) : base(unitOfWork)
     {
         this.jobRepository = jobRepository;
-        this.unitOfWork = unitOfWork;
     }
 
-    public async Task Execute(AddJobRequest request)
+    protected override Task OnExecute(AddJobRequest request, CancellationToken token)
     {
-        jobRepository.Add(new Job
+        jobRepository.Put(new Job
         {
             Name = request.Name,
             Priority = JobPriority.Medium
         });
 
-        await unitOfWork.Commit();
+        return Task.CompletedTask;
     }
 }

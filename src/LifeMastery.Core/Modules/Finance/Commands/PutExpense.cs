@@ -29,39 +29,48 @@ public sealed class PutExpense : CommandBase<PutExpenseRequest>
 
     protected override async Task OnExecute(PutExpenseRequest request, CancellationToken token)
     {
-        if (request.Id.HasValue)
-        {
-            var expense = await expenseRepository.Get(request.Id.Value);
+        var expense = request.Id.HasValue
+            ? await UpdateExistingExpense(request)
+            : await CreateNewExpense(request);
 
-            expense.Note = request.Note;
-            expense.Amount = request.Amount;
-            expense.Date = DateOnly.FromDateTime(request.Date);
+        expenseRepository.Put(expense);
+    }
 
-            if (request.CategoryId is not null)
-            {
-                expense.Category = await expenseCategoryRepository.Get(request.CategoryId.Value);
-            }
-            else
-            {
-                expense.Category = null;
-            }
+    private async Task<Expense> UpdateExistingExpense(PutExpenseRequest request)
+    {
+        var expense = await expenseRepository.Get(request.Id!.Value)
+            ?? throw new Exception($"Expense with ID '{request.Id!.Value}' was not found.");
 
-            expenseRepository.Update(expense);
-        }
-        else
-        {
-            var expense = new Expense(request.Amount)
-            {
-                Note = request.Note,
-                Date = DateOnly.FromDateTime(request.Date)
-            };
+        UpdateCommonProperties(expense, request);
 
-            if (request.CategoryId is not null)
-            {
-                expense.Category = await expenseCategoryRepository.Get(request.CategoryId.Value);
-            }
+        expense.Category = await GetCategory(request.CategoryId);
 
-            expenseRepository.Add(expense);
-        }
+        return expense;
+    }
+
+    private async Task<Expense> CreateNewExpense(PutExpenseRequest request)
+    {
+        var expense = new Expense(request.Amount);
+
+        UpdateCommonProperties(expense, request);
+
+        expense.Category = await GetCategory(request.CategoryId);
+
+        return expense;
+    }
+
+    private void UpdateCommonProperties(Expense expense, PutExpenseRequest request)
+    {
+        expense.Note = request.Note;
+        expense.Date = DateOnly.FromDateTime(request.Date);
+    }
+
+    private async Task<ExpenseCategory?> GetCategory(int? categoryId)
+    {
+        if (categoryId is null)
+            return null;
+
+        return await expenseCategoryRepository.Get(categoryId.Value)
+            ?? throw new Exception($"Expense category with ID '{categoryId.Value}' was not found.");
     }
 }

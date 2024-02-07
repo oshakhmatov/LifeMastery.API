@@ -40,11 +40,11 @@ public sealed class PutRegularPayment : CommandBase<PutRegularPaymentRequest>
             regularPayment.PayFromDay = request.PayFromDay;
             regularPayment.SetDeadline(request.DeadlineDay, request.DeadlineMonth);
 
-            regularPaymentRepository.Update(regularPayment);
+            regularPaymentRepository.Put(regularPayment);
         }
         else
         {
-            regularPaymentRepository.Add(new RegularPayment(
+            regularPaymentRepository.Put(new RegularPayment(
                 request.Name,
                 request.IsAdvanced,
                 request.Period,

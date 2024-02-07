@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.WeightControl.Models;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.WeightControl.Models;
 using LifeMastery.Core.Modules.WeightControl.Repositories;
 
 namespace LifeMastery.Core.Modules.WeightControl.Commands;
@@ -8,18 +9,16 @@ public sealed class AddWeightRecordRequest
     public double Weight { get; set; }
 }
 
-public sealed class AddWeightRecord
+public sealed class AddWeightRecord : CommandBase<AddWeightRecordRequest>
 {
     private readonly IWeightRecordRepository weightRecordRepository;
-    private readonly IUnitOfWork unitOfWork;
 
-    public AddWeightRecord(IWeightRecordRepository weightRecordRepository, IUnitOfWork unitOfWork)
+    public AddWeightRecord(IUnitOfWork unitOfWork, IWeightRecordRepository weightRecordRepository) : base(unitOfWork)
     {
         this.weightRecordRepository = weightRecordRepository;
-        this.unitOfWork = unitOfWork;
     }
 
-    public async Task Execute(AddWeightRecordRequest request)
+    protected override async Task OnExecute(AddWeightRecordRequest request, CancellationToken token)
     {
         var today = DateOnly.FromDateTime(DateTime.UtcNow.Date);
         var weight = Math.Round(request.Weight, 1);
@@ -27,7 +26,7 @@ public sealed class AddWeightRecord
         var existingRecord = await weightRecordRepository.GetLast();
         if (existingRecord is null || existingRecord.Date != today)
         {
-            weightRecordRepository.Add(new WeightRecord
+            weightRecordRepository.Put(new WeightRecord
             {
                 Date = today,
                 Weight = weight
@@ -36,9 +35,7 @@ public sealed class AddWeightRecord
         else
         {
             existingRecord.Weight = weight;
-            weightRecordRepository.Update(existingRecord);
+            weightRecordRepository.Put(existingRecord);
         }
-
-        await unitOfWork.Commit();
     }
 }

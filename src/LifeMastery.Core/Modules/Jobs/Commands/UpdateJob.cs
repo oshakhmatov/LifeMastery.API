@@ -53,7 +53,7 @@ public sealed class UpdateJob
             };
         }
 
-        jobRepository.Update(job);
+        jobRepository.Put(job);
 
         await unitOfWork.Commit();
     }

@@ -4,7 +4,6 @@ namespace LifeMastery.Core.Modules.WeightControl.Repositories;
 
 public interface IHealthInfoRepository
 {
-    void Add(HealthInfo healthInfo);
     public Task<HealthInfo?> Get();
-    void Update(HealthInfo healthInfo);
+    void Put(HealthInfo healthInfo);
 }

@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.WeightControl.Enums;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.WeightControl.Enums;
 using LifeMastery.Core.Modules.WeightControl.Models;
 using LifeMastery.Core.Modules.WeightControl.Repositories;
 
@@ -11,24 +12,22 @@ public class UpdateHealthInfoRequest
     public DateOnly BirthDate { get; set; }
 }
 
-public sealed class UpdateHealthInfo
+public sealed class UpdateHealthInfo : CommandBase<UpdateHealthInfoRequest>
 {
     private readonly IHealthInfoRepository healthInfoRepository;
-    private readonly IUnitOfWork unitOfWork;
 
-    public UpdateHealthInfo(IHealthInfoRepository healthInfoRepository, IUnitOfWork unitOfWork)
+    public UpdateHealthInfo(IUnitOfWork unitOfWork, IHealthInfoRepository healthInfoRepository) : base(unitOfWork)
     {
         this.healthInfoRepository = healthInfoRepository;
-        this.unitOfWork = unitOfWork;
     }
 
-    public async Task Execute(UpdateHealthInfoRequest request)
+    protected override async Task OnExecute(UpdateHealthInfoRequest request, CancellationToken token)
     {
         var healthInfo = await healthInfoRepository.Get();
 
         if (healthInfo is null)
         {
-            healthInfoRepository.Add(new HealthInfo
+            healthInfoRepository.Put(new HealthInfo
             {
                 UserId = 1,
                 BirthDate = request.BirthDate,
@@ -42,9 +41,7 @@ public sealed class UpdateHealthInfo
             healthInfo.Gender = request.Gender;
             healthInfo.Height = request.Height;
 
-            healthInfoRepository.Update(healthInfo);
+            healthInfoRepository.Put(healthInfo);
         }
-
-        await unitOfWork.Commit();
     }
 }

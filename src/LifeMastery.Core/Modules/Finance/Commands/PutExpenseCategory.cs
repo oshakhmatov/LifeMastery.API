@@ -31,12 +31,12 @@ public sealed class PutExpenseCategory : CommandBase<PutExpenseCategoryRequest>
         {
             var expenseCategory = await expenseCategoryRepository.Get(request.Id.Value);
             expenseCategory.Name = request.Name;
-            expenseCategoryRepository.Update(expenseCategory);
+            expenseCategoryRepository.Put(expenseCategory);
         }
         else
         {
             var expenseCategory = new ExpenseCategory(request.Name);
-            expenseCategoryRepository.Add(expenseCategory);
+            expenseCategoryRepository.Put(expenseCategory);
         }
     }
 }

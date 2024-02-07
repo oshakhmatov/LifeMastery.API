@@ -18,9 +18,10 @@ public class WeightController : ApiControllerBase
     [HttpPost("records")]
     public async Task AddWeightRecord(
         [FromServices] AddWeightRecord addWeightRecord,
-        [FromBody] AddWeightRecordRequest request)
+        [FromBody] AddWeightRecordRequest request,
+        CancellationToken cancellationToken)
     {
-        await addWeightRecord.Execute(request);
+        await addWeightRecord.Execute(request, cancellationToken);
     }
 
     [HttpPut("records/{date}")]
@@ -43,8 +44,9 @@ public class WeightController : ApiControllerBase
     [HttpPost("health-info")]
     public async Task AddOrUpdate(
         [FromServices] UpdateHealthInfo updateHealthInfo,
-        [FromBody] UpdateHealthInfoRequest request)
+        [FromBody] UpdateHealthInfoRequest request,
+        CancellationToken cancellationToken)
     {
-        await updateHealthInfo.Execute(request);
+        await updateHealthInfo.Execute(request, cancellationToken);
     }
 }

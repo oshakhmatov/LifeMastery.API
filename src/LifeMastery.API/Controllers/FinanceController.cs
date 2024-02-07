@@ -18,13 +18,12 @@ public class FinanceController : ApiControllerBase
     }
 
     [HttpPut("expenses")]
-    public async Task<IActionResult> PutExpense(
+    public async Task PutExpense(
         [FromServices] PutExpense putExpense,
         [FromBody] PutExpenseRequest request,
         CancellationToken cancellationToken)
     {
         await putExpense.Execute(request, cancellationToken);
-        return Ok();
     }
 
     [HttpPost("expenses/update")]

@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using LifeMastery.Core.Modules.Finance.Commands;
-using LifeMastery.Core.Modules.Finance.Enums;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -19,16 +18,11 @@ public sealed class PutRegularPaymentTests : TestBase
     public async Task RegularPaymentNotExists_AddsNew()
     {
         // Arrange
-        var command = new PutRegularPaymentRequest
-        {
-            DeadlineDay = fixture.Create<int>(),
-            DeadlineMonth = fixture.Create<int>(),
-            Name = fixture.Create<string>(),
-            Period = fixture.Create<Period>()
-        };
+        var request = fixture.Create<PutRegularPaymentRequest>();
+        request.Id = null;
 
         //Act
-        var response = await _client.PutAsync("/api/finance/regular-payments", JsonContent.Create(command));
+        var response = await _client.PutAsync("/api/finance/regular-payments", JsonContent.Create(request));
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -18,13 +18,12 @@ public sealed class PutExpenseTests : TestBase
     public async Task ExpenseDoesNotExist_AddsNewExpense()
     {
         // Arrange
-        var command = new PutExpenseRequest()
-        {
-            Amount = fixture.Create<decimal>()
-        };
+        var request = fixture.Create<PutExpenseRequest>();
+        request.Id = null;
+        request.CategoryId = null;
 
         //Act
-        var response = await _client.PutAsync("/api/finance/expenses", JsonContent.Create(command));
+        var response = await _client.PutAsync("/api/finance/expenses", JsonContent.Create(request));
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

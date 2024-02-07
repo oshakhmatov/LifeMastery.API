@@ -28,7 +28,7 @@ public sealed class UpdateWeightRecord
 
         weightRecord.Weight = weight;
 
-        weightRecordRepository.Update(weightRecord);
+        weightRecordRepository.Put(weightRecord);
 
         await unitOfWork.Commit();
     }

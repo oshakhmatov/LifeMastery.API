@@ -19,7 +19,7 @@ public abstract class RepositoryBase<TEntity>
         dbContext.Remove(entity);
     }
 
-    public void Update(TEntity entity)
+    public void Put(TEntity entity)
     {
         dbContext.Update(entity);
     }

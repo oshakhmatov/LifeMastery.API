@@ -6,8 +6,7 @@ public interface IExpenseCategoryRepository
 {
     public Task<ExpenseCategory?> Get(int id);
     public Task<ExpenseCategory?> GetByName(string name);
-    public void Add(ExpenseCategory expenseCategory);
-    public void Update(ExpenseCategory expenseCategory);
+    public void Put(ExpenseCategory expenseCategory);
     public void Remove(ExpenseCategory expenseCategory);
     public Task<ExpenseCategory[]> List();
 }

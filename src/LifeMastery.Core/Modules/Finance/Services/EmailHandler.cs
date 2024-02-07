@@ -63,7 +63,7 @@ public class EmailHandler
                     }
                 }
 
-                expenseRepository.Add(expense);
+                expenseRepository.Put(expense);
             }
         }
 
