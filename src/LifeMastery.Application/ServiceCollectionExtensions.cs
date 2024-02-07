@@ -15,7 +15,7 @@ public static class ServiceCollectionExtensions
 
         services.AddJobsModule();
         services.AddWeightControlModule();
-        services.AddFinanceModule(appSection);
+        services.AddFinanceModule();
 
         return services;
     }

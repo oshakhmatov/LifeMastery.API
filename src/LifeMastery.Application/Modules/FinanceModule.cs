@@ -1,6 +1,4 @@
-﻿using LifeMastery.Application.HostedServices;
-using LifeMastery.Application.HostedServices.Options;
-using LifeMastery.Core.Modules.Finance.Commands;
+﻿using LifeMastery.Core.Modules.Finance.Commands;
 using LifeMastery.Core.Modules.Finance.Queries;
 using LifeMastery.Core.Modules.Finance.Repositories;
 using LifeMastery.Core.Modules.Finance.Services;
@@ -14,11 +12,9 @@ namespace LifeMastery.Application.Modules;
 
 public static class FinanceModule
 {
-    public static IServiceCollection AddFinanceModule(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddFinanceModule(this IServiceCollection services)
     {
         return services
-            .Configure<EmailHandlerServiceOptions>(configuration.GetSection(nameof(EmailHandlerServiceOptions)))
-            .AddHostedService<EmailHandlerHostedService>()
             .AddTransient<EmailHandler>()
             .AddTransient<IExpenseParser, RaiffeisenExpenseParser>()
             .AddTransient<IEmailProvider, EmailProvider>()
