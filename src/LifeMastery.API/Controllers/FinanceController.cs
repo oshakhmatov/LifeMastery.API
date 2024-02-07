@@ -20,9 +20,10 @@ public class FinanceController : ApiControllerBase
     [HttpPut("expenses")]
     public async Task<IActionResult> PutExpense(
         [FromServices] PutExpense putExpense,
-        [FromBody] PutExpenseRequest request)
+        [FromBody] PutExpenseRequest request,
+        CancellationToken cancellationToken)
     {
-        await putExpense.Execute(request);
+        await putExpense.Execute(request, cancellationToken);
         return Ok();
     }
 
@@ -45,25 +46,28 @@ public class FinanceController : ApiControllerBase
     [HttpDelete("expenses/{id}")]
     public async Task RemoveExpense(
         [FromServices] RemoveExpense removeExpense,
-        int id)
+        int id,
+        CancellationToken cancellationToken)
     {
-        await removeExpense.Execute(id);
+        await removeExpense.Execute(id, cancellationToken);
     }
 
     [HttpPut("expense-categories")]
     public async Task PutExpenseCategory(
        [FromServices] PutExpenseCategory putExpenseCategory,
-       [FromBody] PutExpenseCategoryRequest request)
+       [FromBody] PutExpenseCategoryRequest request,
+       CancellationToken cancellationToken)
     {
-        await putExpenseCategory.Execute(request);
+        await putExpenseCategory.Execute(request, cancellationToken);
     }
 
     [HttpDelete("expense-categories/{id}")]
     public async Task RemoveExpenseCategory(
         [FromServices] RemoveExpenseCategory removeExpenseCategory,
-        int id)
+        int id,
+        CancellationToken cancellationToken)
     {
-        await removeExpenseCategory.Execute(id);
+        await removeExpenseCategory.Execute(id, cancellationToken);
     }
 
     [HttpPut("regular-payments")]

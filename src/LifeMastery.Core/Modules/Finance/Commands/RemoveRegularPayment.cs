@@ -7,7 +7,9 @@ public class RemoveRegularPayment : CommandBase<int>
 {
     private readonly IRegularPaymentRepository regularPaymentRepository;
 
-    public RemoveRegularPayment(IUnitOfWork unitOfWork, IRegularPaymentRepository regularPaymentRepository) : base(unitOfWork)
+    public RemoveRegularPayment(
+        IUnitOfWork unitOfWork,
+        IRegularPaymentRepository regularPaymentRepository) : base(unitOfWork)
     {
         this.regularPaymentRepository = regularPaymentRepository;
     }

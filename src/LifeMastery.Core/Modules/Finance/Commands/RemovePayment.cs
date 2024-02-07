@@ -13,7 +13,9 @@ public sealed class RemovePayment : CommandBase<RemovePaymentRequest>
 {
     private readonly IRegularPaymentRepository regularPaymentRepository;
 
-    public RemovePayment(IUnitOfWork unitOfWork, IRegularPaymentRepository regularPaymentRepository) : base(unitOfWork)
+    public RemovePayment(
+        IUnitOfWork unitOfWork,
+        IRegularPaymentRepository regularPaymentRepository) : base(unitOfWork)
     {
         this.regularPaymentRepository = regularPaymentRepository;
     }

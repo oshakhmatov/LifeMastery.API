@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Models;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
 namespace LifeMastery.Core.Modules.Finance.Commands;
@@ -9,20 +10,18 @@ public sealed class PutExpenseCategoryRequest
     public string Name { get; set; }
 }
 
-public sealed class PutExpenseCategory
+public sealed class PutExpenseCategory : CommandBase<PutExpenseCategoryRequest>
 {
     private readonly IExpenseCategoryRepository expenseCategoryRepository;
-    private readonly IUnitOfWork unitOfWork;
 
     public PutExpenseCategory(
-        IUnitOfWork unitOfWork,
-        IExpenseCategoryRepository expenseCategoryRepository)
+        IUnitOfWork unitOfWork, 
+        IExpenseCategoryRepository expenseCategoryRepository) : base(unitOfWork)
     {
-        this.unitOfWork = unitOfWork;
         this.expenseCategoryRepository = expenseCategoryRepository;
     }
 
-    public async Task Execute(PutExpenseCategoryRequest request)
+    protected override async Task OnExecute(PutExpenseCategoryRequest request, CancellationToken token)
     {
         var existingCategory = await expenseCategoryRepository.GetByName(request.Name);
         if (existingCategory is not null)
@@ -39,7 +38,5 @@ public sealed class PutExpenseCategory
             var expenseCategory = new ExpenseCategory(request.Name);
             expenseCategoryRepository.Add(expenseCategory);
         }
-
-        await unitOfWork.Commit();
     }
 }

@@ -1,26 +1,24 @@
-﻿using LifeMastery.Core.Modules.Finance.Repositories;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.Repositories;
 
 namespace LifeMastery.Core.Modules.Finance.Commands;
 
-public sealed class RemoveExpense
+public sealed class RemoveExpense : CommandBase<int>
 {
     private readonly IExpenseRepository expenseRepository;
-    private readonly IUnitOfWork unitOfWork;
 
-    public RemoveExpense(IExpenseRepository expenseRepository, IUnitOfWork unitOfWork)
+    public RemoveExpense(
+        IUnitOfWork unitOfWork,
+        IExpenseRepository expenseRepository) : base(unitOfWork)
     {
         this.expenseRepository = expenseRepository;
-        this.unitOfWork = unitOfWork;
     }
 
-    public async Task Execute(int id)
+    protected override async Task OnExecute(int id, CancellationToken token)
     {
-        var expense = await expenseRepository.Get(id);
-        if (expense is null)
-            throw new Exception($"Expense with ID={id} was not found");
+        var expense = await expenseRepository.Get(id)
+            ?? throw new Exception($"Expense with ID={id} was not found");
 
         expenseRepository.Remove(expense);
-
-        await unitOfWork.Commit();
     }
 }

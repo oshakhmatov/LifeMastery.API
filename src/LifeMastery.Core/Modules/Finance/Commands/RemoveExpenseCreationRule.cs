@@ -13,7 +13,9 @@ public sealed class RemoveExpenseCreationRule : CommandBase<RemoveExpenseCreatio
 {
     private readonly IEmailSubscriptionRepository emailSubscriptionRepository;
 
-    public RemoveExpenseCreationRule(IUnitOfWork unitOfWork, IEmailSubscriptionRepository emailSubscriptionRepository) : base(unitOfWork)
+    public RemoveExpenseCreationRule(
+        IUnitOfWork unitOfWork,
+        IEmailSubscriptionRepository emailSubscriptionRepository) : base(unitOfWork)
     {
         this.emailSubscriptionRepository = emailSubscriptionRepository;
     }

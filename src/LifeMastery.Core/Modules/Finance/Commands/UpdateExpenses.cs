@@ -1,25 +1,27 @@
-﻿using LifeMastery.Core.Modules.Finance.Models;
+﻿using LifeMastery.Core.Common;
 using LifeMastery.Core.Modules.Finance.Repositories;
 using LifeMastery.Core.Modules.Finance.Services.Abstractions;
 
 namespace LifeMastery.Core.Modules.Finance.Commands;
 
-public class UpdateExpenses
+public class UpdateExpenses : CommandBase
 {
-    private readonly IUnitOfWork unitOfWork;
     private readonly IEmailSubscriptionRepository emailSubscriptionRepository;
     private readonly IExpenseParser expenseParser;
 
-    public UpdateExpenses(IUnitOfWork unitOfWork, IEmailSubscriptionRepository emailSubscriptionRepository, IExpenseParser expenseParser)
+    public UpdateExpenses(
+        IUnitOfWork unitOfWork,
+        IEmailSubscriptionRepository emailSubscriptionRepository,
+        IExpenseParser expenseParser)
+        : base(unitOfWork)
     {
-        this.unitOfWork = unitOfWork;
         this.emailSubscriptionRepository = emailSubscriptionRepository;
         this.expenseParser = expenseParser;
     }
 
-    public async Task Execute(CancellationToken cancellationToken)
+    protected override async Task OnExecute(CancellationToken token)
     {
-        var emailSubs = await emailSubscriptionRepository.ListActiveWithExpenses(cancellationToken);
+        var emailSubs = await emailSubscriptionRepository.ListActiveWithExpenses(token);
         if (emailSubs.Length == 0)
             return;
 
@@ -44,7 +46,5 @@ public class UpdateExpenses
                 }
             }
         }
-
-        await unitOfWork.Commit();
     }
 }
