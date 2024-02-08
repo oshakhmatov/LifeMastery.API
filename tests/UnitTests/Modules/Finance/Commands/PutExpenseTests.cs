@@ -25,6 +25,7 @@ public sealed class PutExpenseTests : TestBase
     {
         // Arrange
         var request = fixture.Create<PutExpenseRequest>();
+        request.CategoryId = null;
 
         var existingExpense = fixture.Create<Expense>();
         _expenseRepositoryMock.Setup(repo => repo.Get(request.Id!.Value)).ReturnsAsync(existingExpense);
@@ -33,7 +34,8 @@ public sealed class PutExpenseTests : TestBase
         await _sut.Execute(request, CancellationToken.None);
 
         // Assert
-        _expenseRepositoryMock.Verify(repo => repo.Put(It.IsAny<Expense>()), Times.Once);
+        Assert.Equal(request.Amount, existingExpense.Amount);
+        Assert.Equal(request.Note, existingExpense.Note);
     }
 
     [Fact]
@@ -67,8 +69,6 @@ public sealed class PutExpenseTests : TestBase
         await _sut.Execute(request, CancellationToken.None);
 
         // Assert
-        _expenseRepositoryMock.Verify(repo => repo.Put(It.IsAny<Expense>()), Times.Once);
-
         Assert.NotNull(expense.Category);
         Assert.Equal(category, expense.Category);
     }
