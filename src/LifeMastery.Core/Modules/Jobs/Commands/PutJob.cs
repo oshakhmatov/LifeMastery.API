@@ -1,10 +1,11 @@
-﻿using LifeMastery.Core.Modules.Jobs.Enums;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Jobs.Enums;
 using LifeMastery.Core.Modules.Jobs.Models;
 using LifeMastery.Core.Modules.Jobs.Repositories;
 
 namespace LifeMastery.Core.Modules.Jobs.Commands;
 
-public class UpdateJobRequest
+public class PutJobRequest
 {
     public int? Id { get; set; }
     public string Name { get; set; }
@@ -15,23 +16,21 @@ public class UpdateJobRequest
     public JobGroup Group { get; set; }
 }
 
-public sealed class UpdateJob
+public sealed class PutJob : CommandBase<PutJobRequest>
 {
     private readonly IJobRepository jobRepository;
-    private readonly IUnitOfWork unitOfWork;
 
-    public UpdateJob(IJobRepository jobRepository, IUnitOfWork unitOfWork)
+    public PutJob(IUnitOfWork unitOfWork, IJobRepository jobRepository) : base(unitOfWork)
     {
         this.jobRepository = jobRepository;
-        this.unitOfWork = unitOfWork;
     }
 
-    public async Task Update(UpdateJobRequest request)
+    protected override async Task OnExecute(PutJobRequest request, CancellationToken token)
     {
-        Job job;
         if (request.Id.HasValue)
         {
-            job = await jobRepository.GetById(request.Id.Value) ?? throw new Exception($"Job with ID={request.Id} was not found");
+            var job = await jobRepository.GetById(request.Id.Value)
+                ?? throw new Exception($"Job with ID={request.Id} was not found");
 
             job.Name = request.Name;
             job.IsCompleted = request.IsCompleted;
@@ -42,7 +41,7 @@ public sealed class UpdateJob
         }
         else
         {
-            job = new Job
+            jobRepository.Put(new Job
             {
                 Name = request.Name,
                 IsCompleted = request.IsCompleted,
@@ -50,11 +49,7 @@ public sealed class UpdateJob
                 EstimationMinutes = request.EstimationMinutes,
                 Deadline = request.Deadline,
                 Group = request.Group
-            };
+            });
         }
-
-        jobRepository.Put(job);
-
-        await unitOfWork.Commit();
     }
 }

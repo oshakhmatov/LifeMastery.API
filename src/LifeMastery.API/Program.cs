@@ -1,7 +1,25 @@
+using LifeMastery.API.Middlewares;
 using LifeMastery.Application;
 using LifeMastery.Infrastructure.Services.Abstractions;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var supportedCultures = new[] { new CultureInfo("ru-RU") };
+
+// Configure RequestLocalizationOptions
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("ru-RU");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+
+    foreach (var culture in supportedCultures)
+    {
+        culture.DateTimeFormat.ShortDatePattern = "dd.MM.yyyy";
+    }
+});
 
 builder.Services.AddApplication(builder.Configuration);
 
@@ -25,6 +43,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(options.Value);
+
 app.UseCors(x =>
 {
     x.AllowAnyMethod();
@@ -32,6 +53,7 @@ app.UseCors(x =>
     x.WithOrigins("http://localhost", "http://localhost:4200");
 });
 
+app.UseRequestLogging();
 app.MapControllers();
 
 app.Run();

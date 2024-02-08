@@ -17,7 +17,10 @@ public sealed class PutExpenseCreationRule : CommandBase<PutExpenseCreationRuleR
     private readonly IEmailSubscriptionRepository emailSubscriptionRepository;
     private readonly IExpenseCategoryRepository expenseCategoryRepository;
 
-    public PutExpenseCreationRule(IUnitOfWork unitOfWork, IEmailSubscriptionRepository emailSubscriptionRepository, IExpenseCategoryRepository expenseCategoryRepository) : base(unitOfWork)
+    public PutExpenseCreationRule(
+        IUnitOfWork unitOfWork,
+        IEmailSubscriptionRepository emailSubscriptionRepository,
+        IExpenseCategoryRepository expenseCategoryRepository) : base(unitOfWork)
     {
         this.emailSubscriptionRepository = emailSubscriptionRepository;
         this.expenseCategoryRepository = expenseCategoryRepository;
@@ -40,9 +43,7 @@ public sealed class PutExpenseCreationRule : CommandBase<PutExpenseCreationRuleR
         }
         else
         {
-            var expenseCreationRule = new ExpenseCreationRule(request.Place, expenseCategory);
-
-            emailSubscription.AddRule(expenseCreationRule);
+            emailSubscription.AddRule(new ExpenseCreationRule(request.Place, expenseCategory));
         }
     }
 }

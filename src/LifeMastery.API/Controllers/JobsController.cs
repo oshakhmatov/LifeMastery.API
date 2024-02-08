@@ -15,16 +15,20 @@ public class JobsController : ApiControllerBase
     }
 
     [HttpPut]
-    public async Task AddOrUpdate(
-        [FromServices] UpdateJob updateJob,
-        [FromBody] UpdateJobRequest request)
+    public async Task PutJob(
+        [FromServices] PutJob updateJob,
+        [FromBody] PutJobRequest request,
+        CancellationToken cancellationToken)
     {
-        await updateJob.Update(request);
+        await updateJob.Execute(request, cancellationToken);
     }
 
     [HttpDelete("{id}")]
-    public async Task Delete([FromServices] DeleteJob deleteJob, int id)
+    public async Task Delete(
+        [FromServices] RemoveJob removeJob,
+        int id,
+        CancellationToken cancellationToken)
     {
-        await deleteJob.Delete(id);
+        await removeJob.Execute(id, cancellationToken);
     }
 }

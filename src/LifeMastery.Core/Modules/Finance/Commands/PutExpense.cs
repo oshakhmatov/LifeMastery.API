@@ -29,14 +29,17 @@ public sealed class PutExpense : CommandBase<PutExpenseRequest>
 
     protected override async Task OnExecute(PutExpenseRequest request, CancellationToken token)
     {
-        var expense = request.Id.HasValue
-            ? await UpdateExistingExpense(request)
-            : await CreateNewExpense(request);
-
-        expenseRepository.Put(expense);
+        if (request.Id == null)
+        {
+            await CreateNewExpense(request);
+        }
+        else
+        {
+            await UpdateExistingExpense(request);
+        }
     }
 
-    private async Task<Expense> UpdateExistingExpense(PutExpenseRequest request)
+    private async Task UpdateExistingExpense(PutExpenseRequest request)
     {
         var expense = await expenseRepository.Get(request.Id!.Value)
             ?? throw new Exception($"Expense with ID '{request.Id!.Value}' was not found.");
@@ -44,11 +47,9 @@ public sealed class PutExpense : CommandBase<PutExpenseRequest>
         UpdateCommonProperties(expense, request);
 
         expense.Category = await GetCategory(request.CategoryId);
-
-        return expense;
     }
 
-    private async Task<Expense> CreateNewExpense(PutExpenseRequest request)
+    private async Task CreateNewExpense(PutExpenseRequest request)
     {
         var expense = new Expense(request.Amount);
 
@@ -56,10 +57,10 @@ public sealed class PutExpense : CommandBase<PutExpenseRequest>
 
         expense.Category = await GetCategory(request.CategoryId);
 
-        return expense;
+        expenseRepository.Put(expense);
     }
 
-    private void UpdateCommonProperties(Expense expense, PutExpenseRequest request)
+    private static void UpdateCommonProperties(Expense expense, PutExpenseRequest request)
     {
         expense.Note = request.Note;
         expense.Date = DateOnly.FromDateTime(request.Date);

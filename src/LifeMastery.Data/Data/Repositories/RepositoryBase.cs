@@ -1,17 +1,12 @@
 ﻿namespace LifeMastery.Infrastructure.Data.Repositories;
 
-public abstract class RepositoryBase<TEntity>
+public abstract class RepositoryBase<TEntity> where TEntity : class
 {
     private protected readonly AppDbContext dbContext;
 
     public RepositoryBase(AppDbContext dbContext)
     {
         this.dbContext = dbContext;
-    }
-
-    public void Add(TEntity entity)
-    {
-        dbContext.Add(entity);
     }
 
     public void Remove(TEntity entity)
@@ -21,6 +16,6 @@ public abstract class RepositoryBase<TEntity>
 
     public void Put(TEntity entity)
     {
-        dbContext.Update(entity);
+        dbContext.Add(entity);
     }
 }

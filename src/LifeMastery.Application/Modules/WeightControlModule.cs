@@ -19,9 +19,8 @@ public static class WeightControlModule
             .AddScoped<IHealthInfoRepository, HealthInfoRepository>()
             .AddScoped<IWeightRecordRepository, WeightRecordRepository>()
             .AddScoped<GetWeightControlData>()
-            .AddScoped<UpdateHealthInfo>()
-            .AddScoped<AddWeightRecord>()
-            .AddScoped<UpdateWeightRecord>()
-            .AddScoped<DeleteWeightRecord>();
+            .AddScoped<PutHealthInfo>()
+            .AddScoped<PutWeightRecord>()
+            .AddScoped<RemoveWeightRecord>();
     }
 }

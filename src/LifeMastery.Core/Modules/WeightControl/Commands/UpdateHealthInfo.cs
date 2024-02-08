@@ -5,23 +5,23 @@ using LifeMastery.Core.Modules.WeightControl.Repositories;
 
 namespace LifeMastery.Core.Modules.WeightControl.Commands;
 
-public class UpdateHealthInfoRequest
+public class PutHealthInfoRequest
 {
     public int Height { get; set; }
     public Gender Gender { get; set; }
     public DateOnly BirthDate { get; set; }
 }
 
-public sealed class UpdateHealthInfo : CommandBase<UpdateHealthInfoRequest>
+public sealed class PutHealthInfo : CommandBase<PutHealthInfoRequest>
 {
     private readonly IHealthInfoRepository healthInfoRepository;
 
-    public UpdateHealthInfo(IUnitOfWork unitOfWork, IHealthInfoRepository healthInfoRepository) : base(unitOfWork)
+    public PutHealthInfo(IUnitOfWork unitOfWork, IHealthInfoRepository healthInfoRepository) : base(unitOfWork)
     {
         this.healthInfoRepository = healthInfoRepository;
     }
 
-    protected override async Task OnExecute(UpdateHealthInfoRequest request, CancellationToken token)
+    protected override async Task OnExecute(PutHealthInfoRequest request, CancellationToken token)
     {
         var healthInfo = await healthInfoRepository.Get();
 
@@ -40,8 +40,6 @@ public sealed class UpdateHealthInfo : CommandBase<UpdateHealthInfoRequest>
             healthInfo.BirthDate = request.BirthDate;
             healthInfo.Gender = request.Gender;
             healthInfo.Height = request.Height;
-
-            healthInfoRepository.Put(healthInfo);
         }
     }
 }

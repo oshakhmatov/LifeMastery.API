@@ -29,12 +29,10 @@ public sealed class PutEmailSubscription : CommandBase<PutEmailSubscriptionReque
 
             emailSubscription.Email = request.Email;
             emailSubscription.IsActive = request.IsActive;
-            emailSubscriptionRepository.Put(emailSubscription);
         }
         else
         {
-            var emailSubscription = new EmailSubscription(request.Email, request.IsActive);
-            emailSubscriptionRepository.Put(emailSubscription);
+            emailSubscriptionRepository.Put(new EmailSubscription(request.Email, request.IsActive));
         }
     }
 }

@@ -29,14 +29,14 @@ public sealed class PutExpenseCategory : CommandBase<PutExpenseCategoryRequest>
 
         if (request.Id.HasValue)
         {
-            var expenseCategory = await expenseCategoryRepository.Get(request.Id.Value);
+            var expenseCategory = await expenseCategoryRepository.Get(request.Id.Value)
+                ?? throw new Exception($"Expense category with ID '{request.Id}' was not found.");
+
             expenseCategory.Name = request.Name;
-            expenseCategoryRepository.Put(expenseCategory);
         }
         else
         {
-            var expenseCategory = new ExpenseCategory(request.Name);
-            expenseCategoryRepository.Put(expenseCategory);
+            expenseCategoryRepository.Put(new ExpenseCategory(request.Name));
         }
     }
 }

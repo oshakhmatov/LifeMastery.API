@@ -1,26 +1,22 @@
-﻿using LifeMastery.Core.Modules.Jobs.Repositories;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Jobs.Repositories;
 
 namespace LifeMastery.Core.Modules.Jobs.Commands;
 
-public sealed class DeleteJob
+public sealed class RemoveJob : CommandBase<int>
 {
     private readonly IJobRepository jobRepository;
-    private readonly IUnitOfWork unitOfWork;
 
-    public DeleteJob(IJobRepository jobRepository, IUnitOfWork unitOfWork)
+    public RemoveJob(IUnitOfWork unitOfWork, IJobRepository jobRepository) : base(unitOfWork)
     {
         this.jobRepository = jobRepository;
-        this.unitOfWork = unitOfWork;
     }
 
-    public async Task Delete(int id)
+    protected override async Task OnExecute(int id, CancellationToken token)
     {
-        var job = await jobRepository.GetById(id);
-        if (job is null)
-            throw new Exception($"Job with ID={id} was not found");
+        var job = await jobRepository.GetById(id)
+            ?? throw new Exception($"Job with ID={id} was not found");
 
         jobRepository.Remove(job);
-
-        await unitOfWork.Commit();
     }
 }

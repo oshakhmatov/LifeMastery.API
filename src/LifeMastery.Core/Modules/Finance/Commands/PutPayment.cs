@@ -40,9 +40,7 @@ public sealed class PutPayment : CommandBase<PutPaymentRequest>
         }
         else
         {
-            var payment = new Payment(request.Amount, date, request.PeriodYear, request.PeriodMonth);
-
-            regularPayment.AddPayment(payment);
+            regularPayment.AddPayment(new Payment(request.Amount, date, request.PeriodYear, request.PeriodMonth));
         }
     }
 }

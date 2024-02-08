@@ -12,9 +12,8 @@ public static class JobsModule
     {
         return services
             .AddScoped<IJobRepository, JobRepository>()
-            .AddScoped<AddJob>()
-            .AddScoped<DeleteJob>()
-            .AddScoped<UpdateJob>()
+            .AddScoped<RemoveJob>()
+            .AddScoped<PutJob>()
             .AddScoped<GetJobs>();
     }
 }

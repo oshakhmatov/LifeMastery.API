@@ -17,13 +17,6 @@ public class WeightRecordRepository : RepositoryBase<WeightRecord>, IWeightRecor
             .FirstOrDefaultAsync();
     }
 
-    public async Task<WeightRecord?> GetLast()
-    {
-        return await dbContext.WeightRecords
-            .OrderByDescending(x => x.Date)
-            .FirstOrDefaultAsync();
-    }
-
     public async Task<WeightRecord[]> List()
     {
         return await dbContext.WeightRecords

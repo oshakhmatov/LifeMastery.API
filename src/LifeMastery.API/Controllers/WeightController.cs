@@ -15,38 +15,30 @@ public class WeightController : ApiControllerBase
         return await getWeightControlData.Execute();
     }
 
-    [HttpPost("records")]
-    public async Task AddWeightRecord(
-        [FromServices] AddWeightRecord addWeightRecord,
-        [FromBody] AddWeightRecordRequest request,
+    [HttpPut("records")]
+    public async Task UpdateWeightRecord(
+        [FromServices] PutWeightRecord putWeightRecord,
+        [FromBody] PutWeightRecordRequest request,
         CancellationToken cancellationToken)
     {
-        await addWeightRecord.Execute(request, cancellationToken);
-    }
-
-    [HttpPut("records/{date}")]
-    public async Task UpdateWeightRecord(
-        [FromServices] UpdateWeightRecord updateWeightRecord,
-        DateOnly date,
-        [FromBody] UpdateWeightRecordRequest request)
-    {
-        await updateWeightRecord.Execute(date, request);
+        await putWeightRecord.Execute(request, cancellationToken);
     }
 
     [HttpDelete("records/{date}")]
-    public async Task DeleteWeightRecord(
-        [FromServices] DeleteWeightRecord deleteWeightRecord,
-        DateOnly date)
+    public async Task RemoveWeightRecord(
+        [FromServices] RemoveWeightRecord removeWeightRecord,
+        string date,
+        CancellationToken cancellationToken)
     {
-        await deleteWeightRecord.Execute(date);
+        await removeWeightRecord.Execute(date, cancellationToken);
     }
 
     [HttpPost("health-info")]
-    public async Task AddOrUpdate(
-        [FromServices] UpdateHealthInfo updateHealthInfo,
-        [FromBody] UpdateHealthInfoRequest request,
+    public async Task PutHealthInfo(
+        [FromServices] PutHealthInfo putHealthInfo,
+        [FromBody] PutHealthInfoRequest request,
         CancellationToken cancellationToken)
     {
-        await updateHealthInfo.Execute(request, cancellationToken);
+        await putHealthInfo.Execute(request, cancellationToken);
     }
 }
