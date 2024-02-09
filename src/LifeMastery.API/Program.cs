@@ -2,24 +2,8 @@ using LifeMastery.API.Middlewares;
 using LifeMastery.Application;
 using LifeMastery.Infrastructure.Services.Abstractions;
 using Microsoft.Extensions.Options;
-using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var supportedCultures = new[] { new CultureInfo("ru-RU") };
-
-// Configure RequestLocalizationOptions
-builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
-    options.DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture("ru-RU");
-    options.SupportedCultures = supportedCultures;
-    options.SupportedUICultures = supportedCultures;
-
-    foreach (var culture in supportedCultures)
-    {
-        culture.DateTimeFormat.ShortDatePattern = "dd.MM.yyyy";
-    }
-});
 
 builder.Services.AddApplication(builder.Configuration);
 

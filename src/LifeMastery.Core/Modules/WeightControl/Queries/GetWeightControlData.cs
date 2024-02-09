@@ -30,9 +30,13 @@ public sealed class GetWeightControlData
         var lastWeightRecords = await weightRecordRepository.List();
         var lastWeightRecord = lastWeightRecords.LastOrDefault();
 
-        var result = new WeightControlViewModel();
+        var result = new WeightControlViewModel
+        {
+            HealthInfo = healthInfo?.ToDto(),
+            LastWeightRecord = lastWeightRecord?.ToDto()
+        };
 
-        if (lastWeightRecords.Any())
+        if (lastWeightRecords.Length > 0)
         {
             result.WeightChart = new WeightChartDto
             {
@@ -43,26 +47,16 @@ public sealed class GetWeightControlData
             result.WeightRecords = lastWeightRecords
                 .Reverse()
                 .Take(30)
-                .Select(WeightRecordDto.FromModel)
+                .Select(wr => wr.ToDto())
                 .ToArray();
-        }
 
-        if (healthInfo is not null)
-        {
-            result.HealthInfo = HealthInfoDto.FromModel(healthInfo);
-        }
-
-        if (lastWeightRecord is not null)
-        {
-            result.LastWeightRecord = WeightRecordDto.FromModel(lastWeightRecord);
+            result.StatisticalData = statisticService.GetStatisticalData(lastWeightRecords);
         }
 
         if (lastWeightRecord is not null && healthInfo is not null)
         {
             result.WeightInfo = healthService.GetWeightInfo(lastWeightRecord.Weight, healthInfo.Height);
         }
-
-        result.StatisticalData = statisticService.GetStatisticalData(lastWeightRecords);
 
         return result;
     }

@@ -7,8 +7,11 @@ public class WeightRecordDto
 {
     public double Weight { get; set; }
     public string Date { get; set; }
+}
 
-    public static WeightRecordDto FromModel(WeightRecord weightRecord)
+public static class WeightRecordProjection
+{
+    public static WeightRecordDto ToDto(this WeightRecord weightRecord)
     {
         return new WeightRecordDto
         {
