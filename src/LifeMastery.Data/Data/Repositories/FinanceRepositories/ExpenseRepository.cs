@@ -11,33 +11,33 @@ public sealed class ExpenseRepository : RepositoryBase<Expense>, IExpenseReposit
     {
     }
 
-    public async Task<Expense?> Get(int id)
+    public async Task<Expense?> Get(int id, CancellationToken token = default)
     {
         return await dbContext.Expenses
             .Include(e => e.Category)
             .Where(e => e.Id == id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(token);
     }
 
-    public async Task<Expense?> GetBySource(string source)
+    public async Task<Expense?> GetBySource(string source, CancellationToken token = default)
     {
         return await dbContext.Expenses
             .Include(e => e.Category)
             .Where(e => e.Source == source)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(token);
     }
 
-    public async Task<Expense[]> List(int year, int month)
+    public async Task<Expense[]> List(int year, int month, CancellationToken token = default)
     {
         return await dbContext.Expenses
             .Include(e => e.Category)
             .Where(e => e.Date.Year == year && e.Date.Month == month)
             .OrderByDescending(e => e.Date)
             .ThenByDescending(e => e.Id)
-            .ToArrayAsync();
+            .ToArrayAsync(token);
     }
 
-    public async Task<ExpenseMonthDto[]> GetExpenseMonths()
+    public async Task<ExpenseMonthDto[]> GetExpenseMonths(CancellationToken token = default)
     {
         return await dbContext.Expenses
             .OrderByDescending(e => e.Date)
@@ -47,6 +47,6 @@ public sealed class ExpenseRepository : RepositoryBase<Expense>, IExpenseReposit
                 Year = e.Date.Year
             })
             .Distinct()
-            .ToArrayAsync();
+            .ToArrayAsync(token);
     } 
 }

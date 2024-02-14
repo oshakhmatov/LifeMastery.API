@@ -7,8 +7,8 @@ public interface IExpenseRepository
 {
     public void Put(Expense expense);
     public void Remove(Expense expense);
-    public Task<Expense?> Get(int id);
-    public Task<Expense[]> List(int year, int month);
-    Task<Expense?> GetBySource(string source);
-    Task<ExpenseMonthDto[]> GetExpenseMonths();
+    public Task<Expense?> Get(int id, CancellationToken token = default);
+    public Task<Expense[]> List(int year, int month, CancellationToken token = default);
+    Task<Expense?> GetBySource(string source, CancellationToken token = default);
+    Task<ExpenseMonthDto[]> GetExpenseMonths(CancellationToken token = default);
 }

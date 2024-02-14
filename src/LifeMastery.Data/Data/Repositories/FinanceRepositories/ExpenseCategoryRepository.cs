@@ -10,25 +10,25 @@ public sealed class ExpenseCategoryRepository : RepositoryBase<ExpenseCategory>,
     {
     }
 
-    public async Task<ExpenseCategory?> Get(int id)
+    public async Task<ExpenseCategory?> Get(int id, CancellationToken token = default)
     {
         return await dbContext.ExpenseCategories
             .Include(ec => ec.Expenses)
             .Where(ec => ec.Id == id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(token);
     }
 
-    public async Task<ExpenseCategory[]> List()
+    public async Task<ExpenseCategory[]> List(CancellationToken token = default)
     {
         return await dbContext.ExpenseCategories
             .OrderBy(ec => ec.Name)
-            .ToArrayAsync();
+            .ToArrayAsync(token);
     }
 
-    public async Task<ExpenseCategory?> GetByName(string name)
+    public async Task<ExpenseCategory?> GetByName(string name, CancellationToken token = default)
     {
         return await dbContext.ExpenseCategories
             .Where(ec => ec.Name == name)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(token);
     }
 }

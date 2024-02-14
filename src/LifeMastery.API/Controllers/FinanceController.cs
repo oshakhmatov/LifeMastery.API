@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Commands;
+﻿using LifeMastery.Application.Modules.Finance.RequestHandlers;
+using LifeMastery.Core.Modules.Finance.Commands;
 using LifeMastery.Core.Modules.Finance.DataTransferObjects;
 using LifeMastery.Core.Modules.Finance.Queries;
 using Microsoft.AspNetCore.Mvc;
