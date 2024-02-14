@@ -9,7 +9,7 @@ public abstract class CommandBase<T>
         this.unitOfWork = unitOfWork;
     }
 
-    public async Task Execute(T request, CancellationToken token)
+    public async Task Execute(T request, CancellationToken token = default)
     {
         await OnExecute(request, token);
         await unitOfWork.Commit();
@@ -27,7 +27,7 @@ public abstract class CommandBase
         this.unitOfWork = unitOfWork;
     }
 
-    public async Task Execute(CancellationToken token)
+    public async Task Execute(CancellationToken token = default)
     {
         await OnExecute(token);
         await unitOfWork.Commit();

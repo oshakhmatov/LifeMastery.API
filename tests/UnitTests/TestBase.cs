@@ -1,10 +1,11 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
+using Common.AutoFixture;
 
-namespace UnitTests.Common;
+namespace UnitTests;
 
-public abstract class TestBase 
-{ 
+public abstract class TestBase
+{
     private protected readonly IFixture fixture;
 
     public TestBase()

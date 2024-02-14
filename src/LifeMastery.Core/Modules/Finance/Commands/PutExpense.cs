@@ -42,7 +42,7 @@ public sealed class PutExpense : CommandBase<PutExpenseRequest>
     private async Task UpdateExistingExpense(PutExpenseRequest request)
     {
         var expense = await expenseRepository.Get(request.Id!.Value)
-            ?? throw new Exception($"Expense with ID '{request.Id!.Value}' was not found.");
+            ?? throw new ApplicationException($"Expense with ID '{request.Id!.Value}' was not found.");
 
         expense.Amount = request.Amount;
         expense.Note = request.Note;
@@ -69,6 +69,6 @@ public sealed class PutExpense : CommandBase<PutExpenseRequest>
             return null;
 
         return await expenseCategoryRepository.Get(categoryId.Value)
-            ?? throw new Exception($"Expense category with ID '{categoryId.Value}' was not found.");
+            ?? throw new ApplicationException($"Expense category with ID '{categoryId.Value}' was not found.");
     }
 }

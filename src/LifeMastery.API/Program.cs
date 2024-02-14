@@ -1,7 +1,5 @@
-using LifeMastery.API.Middlewares;
 using LifeMastery.Application;
 using LifeMastery.Infrastructure.Services.Abstractions;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,9 +25,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
-app.UseRequestLocalization(options.Value);
-
 app.UseCors(x =>
 {
     x.AllowAnyMethod();
@@ -37,7 +32,6 @@ app.UseCors(x =>
     x.WithOrigins("http://localhost", "http://localhost:4200");
 });
 
-app.UseRequestLogging();
 app.MapControllers();
 
 app.Run();

@@ -1,10 +1,10 @@
 ﻿using AutoFixture;
 using AutoFixture.AutoMoq;
-using IntegrationTests.Mocks;
+using Common.AutoFixture;
 using LifeMastery.Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace IntegrationTests.Tests;
+namespace IntegrationTests;
 
 public abstract class TestBase : IClassFixture<WebAppFactory>, IDisposable
 {

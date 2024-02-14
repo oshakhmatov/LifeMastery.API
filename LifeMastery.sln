@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "tests\IntegrationTests\IntegrationTests.csproj", "{88AB1E9A-5FEA-4B59-BCBC-B9DA915F6D63}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LifeMastery.Application", "src\LifeMastery.Application\LifeMastery.Application.csproj", "{28EDA137-824F-4F56-A1EF-99753E9A9B5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LifeMastery.Application", "src\LifeMastery.Application\LifeMastery.Application.csproj", "{28EDA137-824F-4F56-A1EF-99753E9A9B5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "tests\Common\Common.csproj", "{A5E2163B-57F0-4F09-8348-8C476DA3A8E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{28EDA137-824F-4F56-A1EF-99753E9A9B5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28EDA137-824F-4F56-A1EF-99753E9A9B5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28EDA137-824F-4F56-A1EF-99753E9A9B5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5E2163B-57F0-4F09-8348-8C476DA3A8E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5E2163B-57F0-4F09-8348-8C476DA3A8E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5E2163B-57F0-4F09-8348-8C476DA3A8E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5E2163B-57F0-4F09-8348-8C476DA3A8E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{E43925D9-1811-4E22-BE6D-57D1D5EEDE88} = {26C61D12-7AE6-423F-B94E-F28B8E543FDB}
 		{88AB1E9A-5FEA-4B59-BCBC-B9DA915F6D63} = {26C61D12-7AE6-423F-B94E-F28B8E543FDB}
 		{28EDA137-824F-4F56-A1EF-99753E9A9B5D} = {D84B89C9-567A-4EB2-A49D-0DDBCE4E7C4A}
+		{A5E2163B-57F0-4F09-8348-8C476DA3A8E1} = {26C61D12-7AE6-423F-B94E-F28B8E543FDB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B3C61EA9-B635-4820-A6EB-FB767AABDFA3}

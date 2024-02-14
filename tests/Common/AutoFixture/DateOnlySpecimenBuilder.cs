@@ -1,7 +1,7 @@
 ﻿using AutoFixture.Kernel;
 using System.Reflection;
 
-namespace IntegrationTests.Mocks;
+namespace Common.AutoFixture;
 
 public class DateOnlySpecimenBuilder : ISpecimenBuilder
 {

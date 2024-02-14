@@ -2,9 +2,9 @@
 using LifeMastery.Core.Modules.Finance.Services;
 using System.Globalization;
 
-namespace UnitTests.Modules.Finance.Services.ExpenseParsers.RaiffeisenExpenseParserTests;
+namespace UnitTests.Tests.Finance.Services.ExpenseParsers;
 
-public class ParseTests
+public class RaiffeisenExpenseParserTests
 {
     [Fact]
     public void AmountWithCommaAndDot_ReturnsCorrectlyParsedExpense()
