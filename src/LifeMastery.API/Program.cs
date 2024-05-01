@@ -29,7 +29,7 @@ app.UseCors(x =>
 {
     x.AllowAnyMethod();
     x.AllowAnyHeader();
-    x.WithOrigins("http://localhost", "http://localhost:4200");
+    x.WithOrigins("http://localhost:81", "http://localhost:4200");
 });
 
 app.MapControllers();
