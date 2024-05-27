@@ -12,21 +12,21 @@ public class RegularPayment
     public int? DeadlineMonth { get; private set; }
     public int? PayFromDay { get; set; }
     public bool IsAdvanced { get; set; }
+    public bool IsTax { get; set; }
 
     private readonly IList<Payment> payments;
     public IReadOnlyCollection<Payment> Payments => payments.AsReadOnly();
 
-    
-
     protected RegularPayment() { }
 
-    public RegularPayment(string name, bool isAdvanced, Period period, int? deadlineDay, int? deadlineMonth, decimal? amount, int? payFromDay)
+    public RegularPayment(string name, bool isAdvanced, bool isTax, Period period, int? deadlineDay, int? deadlineMonth, decimal? amount, int? payFromDay)
     {
         Name = name;
         Amount = amount;
         Period = period;
         IsAdvanced = isAdvanced;
         PayFromDay = payFromDay;
+        IsTax = isTax;
 
         SetDeadline(deadlineDay, deadlineMonth);
     }

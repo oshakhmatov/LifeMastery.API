@@ -24,6 +24,7 @@ public static class FinanceModule
             .AddScoped<IExpenseCategoryRepository, ExpenseCategoryRepository>()
             .AddScoped<IRegularPaymentRepository, RegularPaymentRepository>()
             .AddScoped<IEmailSubscriptionRepository, EmailSubscriptionRepository>()
+            .AddScoped<IFinanceInfoRepository, FinanceInfoRepository>()
             .AddScoped<IAddExpense, AddExpense>()
             .AddScoped<IUpdateExpense, UpdateExpense>()
             .AddScoped<GetFinanceData>()
@@ -40,6 +41,7 @@ public static class FinanceModule
             .AddScoped<RemoveExpenseCreationRule>()
             .AddScoped<RemoveEmailSubscription>()
             .AddScoped<PutPayment>()
-            .AddScoped<RemovePayment>();
+            .AddScoped<RemovePayment>()
+            .AddScoped<PutFinanceInfo>();
     }
 }

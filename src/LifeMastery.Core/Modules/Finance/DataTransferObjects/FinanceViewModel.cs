@@ -2,12 +2,14 @@
 
 public sealed class FinanceViewModel
 {
-    public decimal MonthTotal { get; set; }
-    public int CurrentExpenseMonth { get; set; }
-    public ExpenseMonthDto[] ExpenseMonths { get; set; }
-    public DailyExpensesDto[] DailyExpenses { get; set; }
-    public ExpenseCategoryDto[] ExpenseCategories { get; set; }
-    public RegularPaymentDto[] RegularPayments { get; set; }
-    public EmailSubscriptionDto[] EmailSubscriptions { get; set; }
-    public ExpenseChartDto? ExpenseChart { get; set; }
+    public required decimal MonthTotal { get; init; }
+    public required int CurrentExpenseMonth { get; init; }
+    public required ExpenseMonthDto[] ExpenseMonths { get; init; }
+    public required DailyExpensesDto[] DailyExpenses { get; init; }
+    public required ExpenseCategoryDto[] ExpenseCategories { get; init; }
+    public required RegularPaymentDto[] RegularPayments { get; init; }
+    public required EmailSubscriptionDto[] EmailSubscriptions { get; init; }
+    public required ExpenseChartDto? ExpenseChart { get; init; }
+    public required FinanceInfoDto? Info { get; init; }
+    public required FinanceStatisticsDto Statistics { get; init; }
 }

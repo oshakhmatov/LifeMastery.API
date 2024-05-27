@@ -14,6 +14,7 @@ public sealed class RegularPaymentDto
     public int? PayFromDay { get; set; }
     public bool IsAdvanced { get; set; }
     public bool IsPaid { get; set; }
+    public bool IsTax { get; set; }
     public PaymentDto[] Payments { get; set; }
 }
 
@@ -29,6 +30,7 @@ public static class RegularPaymentProjection
             Amount = regularPayment.Amount,
             Period = regularPayment.Period,
             IsPaid = regularPayment.IsPaid(),
+            IsTax = regularPayment.IsTax,
             DeadlineDay = regularPayment.DeadlineDay,
             DeadlineMonth = regularPayment.DeadlineMonth,
             PayFromDay = regularPayment.PayFromDay,

@@ -4,15 +4,17 @@ namespace LifeMastery.Core.Modules.Finance.DataTransferObjects;
 
 public class ExpenseCategoryDto
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
+    public int Id { get; init; }
+    public required string Name { get; init; }
+    public required bool IsFood { get; init; }
 
     public static ExpenseCategoryDto FromModel(ExpenseCategory expenseCategory)
     {
         return new ExpenseCategoryDto
         {
             Id = expenseCategory.Id,
-            Name = expenseCategory.Name
+            Name = expenseCategory.Name,
+            IsFood = expenseCategory.IsFood,
         };
     }
 }

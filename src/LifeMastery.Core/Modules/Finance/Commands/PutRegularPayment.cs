@@ -15,6 +15,7 @@ public sealed class PutRegularPaymentRequest
     public int? DeadlineMonth { get; set; }
     public int? PayFromDay { get; set; }
     public bool IsAdvanced { get; set; }
+    public bool IsTax { get; set; }
 }
 
 public sealed class PutRegularPayment : CommandBase<PutRegularPaymentRequest>
@@ -37,6 +38,7 @@ public sealed class PutRegularPayment : CommandBase<PutRegularPaymentRequest>
             regularPayment.Name = request.Name;
             regularPayment.Amount = request.Amount;
             regularPayment.IsAdvanced = request.IsAdvanced;
+            regularPayment.IsTax = request.IsTax;
             regularPayment.PayFromDay = request.PayFromDay;
             regularPayment.SetDeadline(request.DeadlineDay, request.DeadlineMonth);
         }
@@ -45,6 +47,7 @@ public sealed class PutRegularPayment : CommandBase<PutRegularPaymentRequest>
             regularPaymentRepository.Put(new RegularPayment(
                 request.Name,
                 request.IsAdvanced,
+                request.IsTax,
                 request.Period,
                 request.DeadlineDay,
                 request.DeadlineMonth,

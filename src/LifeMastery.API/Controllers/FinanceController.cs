@@ -141,4 +141,13 @@ public class FinanceController : ApiControllerBase
     {
         await removePayment.Execute(request, token);
     }
+
+    [HttpPut("info")]
+    public async Task PutStatistics(
+        [FromServices] PutFinanceInfo putFinanceInfo,
+        [FromBody] PutFinanceInfoCommand command,
+        CancellationToken token)
+    {
+        await putFinanceInfo.Execute(command, token);
+    }
 }

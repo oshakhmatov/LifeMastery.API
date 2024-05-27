@@ -3,6 +3,7 @@ using System;
 using LifeMastery.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LifeMastery.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240527081508_AddFinanceStatistics")]
+    partial class AddFinanceStatistics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -87,9 +90,6 @@ namespace LifeMastery.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsFood")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -126,7 +126,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("ExpenseCreationRules");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.FinanceInfo", b =>
+            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.FinanceStatistics", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,12 +134,12 @@ namespace LifeMastery.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("Income")
+                    b.Property<decimal>("Income")
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
-                    b.ToTable("FinanceInfo");
+                    b.ToTable("FinanceStatistics");
                 });
 
             modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Payment", b =>
@@ -190,9 +190,6 @@ namespace LifeMastery.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsAdvanced")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsTax")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
