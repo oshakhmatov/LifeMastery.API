@@ -4,15 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LifeMastery.Infrastructure.Services;
 
-public class MigrationService : IMigrationService, IDisposable
+public class MigrationService(AppDbContext dbContext) : IMigrationService, IDisposable
 {
-    private readonly AppDbContext dbContext;
-
-    public MigrationService(AppDbContext dbContext)
-    {
-        this.dbContext = dbContext;
-    }
-
     public async Task Migrate()
     {
         await dbContext.Database.MigrateAsync();
