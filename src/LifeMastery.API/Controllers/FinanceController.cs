@@ -1,5 +1,10 @@
-﻿using LifeMastery.Application.Modules.Finance.RequestHandlers;
-using LifeMastery.Core.Modules.Finance.Commands;
+﻿using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
+using LifeMastery.Core.Modules.Finance.Commands.ExpenseCategories;
+using LifeMastery.Core.Modules.Finance.Commands.ExpenseCreationRules;
+using LifeMastery.Core.Modules.Finance.Commands.Expenses;
+using LifeMastery.Core.Modules.Finance.Commands.Info;
+using LifeMastery.Core.Modules.Finance.Commands.Payments;
+using LifeMastery.Core.Modules.Finance.Commands.RegularPayments;
 using LifeMastery.Core.Modules.Finance.DataTransferObjects;
 using LifeMastery.Core.Modules.Finance.Queries;
 using Microsoft.AspNetCore.Mvc;

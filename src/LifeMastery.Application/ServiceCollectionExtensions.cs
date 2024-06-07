@@ -1,5 +1,4 @@
 ﻿using LifeMastery.Application.Modules;
-using LifeMastery.Application.Modules.Finance;
 using LifeMastery.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

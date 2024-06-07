@@ -1,12 +1,12 @@
 ﻿using LifeMastery.Core.Common;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
-namespace LifeMastery.Core.Modules.Finance.Commands;
+namespace LifeMastery.Core.Modules.Finance.Commands.ExpenseCreationRules;
 
 public sealed class RemoveExpenseCreationRuleRequest
 {
-    public int ExpenseCreationRuleId {  get; set; }
-    public int EmailSubscriptionId { get; set; }
+    public required int ExpenseCreationRuleId { get; set; }
+    public required int EmailSubscriptionId { get; set; }
 }
 
 public sealed class RemoveExpenseCreationRule : CommandBase<RemoveExpenseCreationRuleRequest>

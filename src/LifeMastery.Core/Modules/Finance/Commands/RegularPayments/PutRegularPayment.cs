@@ -3,14 +3,14 @@ using LifeMastery.Core.Modules.Finance.Enums;
 using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
-namespace LifeMastery.Core.Modules.Finance.Commands;
+namespace LifeMastery.Core.Modules.Finance.Commands.RegularPayments;
 
 public sealed class PutRegularPaymentRequest
 {
     public int? Id { get; set; }
-    public string Name { get; set; }
+    public required string Name { get; set; }
     public decimal? Amount { get; set; }
-    public Period Period { get; set; }
+    public required Period Period { get; set; }
     public int? DeadlineDay { get; set; }
     public int? DeadlineMonth { get; set; }
     public int? PayFromDay { get; set; }
@@ -18,15 +18,10 @@ public sealed class PutRegularPaymentRequest
     public bool IsTax { get; set; }
 }
 
-public sealed class PutRegularPayment : CommandBase<PutRegularPaymentRequest>
+public sealed class PutRegularPayment(
+    IUnitOfWork unitOfWork,
+    IRegularPaymentRepository regularPaymentRepository) : CommandBase<PutRegularPaymentRequest>(unitOfWork)
 {
-    private readonly IRegularPaymentRepository regularPaymentRepository;
-
-    public PutRegularPayment(IUnitOfWork unitOfWork, IRegularPaymentRepository regularPaymentRepository) : base(unitOfWork)
-    {
-        this.regularPaymentRepository = regularPaymentRepository;
-    }
-
     protected override async Task OnExecute(PutRegularPaymentRequest request, CancellationToken token)
     {
         if (request.Id.HasValue)

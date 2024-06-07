@@ -2,22 +2,17 @@
 using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
-namespace LifeMastery.Core.Modules.Finance.Commands;
+namespace LifeMastery.Core.Modules.Finance.Commands.Info;
 
 public class PutFinanceInfoCommand
 {
     public required decimal? Income { get; init; }
 }
 
-public class PutFinanceInfo : CommandBase<PutFinanceInfoCommand>
+public class PutFinanceInfo(
+    IUnitOfWork unitOfWork,
+    IFinanceInfoRepository financeInfoRepository) : CommandBase<PutFinanceInfoCommand>(unitOfWork)
 {
-    private readonly IFinanceInfoRepository financeInfoRepository;
-
-    public PutFinanceInfo(IUnitOfWork unitOfWork, IFinanceInfoRepository financeInfoRepository) : base(unitOfWork)
-    {
-        this.financeInfoRepository = financeInfoRepository;
-    }
-
     protected override async Task OnExecute(PutFinanceInfoCommand command, CancellationToken token = default)
     {
         var info = await financeInfoRepository.Get(token);

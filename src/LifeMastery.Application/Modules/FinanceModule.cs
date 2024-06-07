@@ -1,7 +1,10 @@
-﻿using LifeMastery.Application.Modules.Finance.RequestHandlers;
-using LifeMastery.Core.Modules.Finance.Commands;
+﻿using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
+using LifeMastery.Core.Modules.Finance.Commands.ExpenseCategories;
+using LifeMastery.Core.Modules.Finance.Commands.ExpenseCreationRules;
 using LifeMastery.Core.Modules.Finance.Commands.Expenses;
-using LifeMastery.Core.Modules.Finance.Commands.Expenses.Absctractions;
+using LifeMastery.Core.Modules.Finance.Commands.Info;
+using LifeMastery.Core.Modules.Finance.Commands.Payments;
+using LifeMastery.Core.Modules.Finance.Commands.RegularPayments;
 using LifeMastery.Core.Modules.Finance.Queries;
 using LifeMastery.Core.Modules.Finance.Repositories;
 using LifeMastery.Core.Modules.Finance.Services;
@@ -10,7 +13,7 @@ using LifeMastery.Infrastructure.Data.Repositories.FinanceRepositories;
 using LifeMastery.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LifeMastery.Application.Modules.Finance;
+namespace LifeMastery.Application.Modules;
 
 public static class FinanceModule
 {
@@ -25,8 +28,6 @@ public static class FinanceModule
             .AddScoped<IRegularPaymentRepository, RegularPaymentRepository>()
             .AddScoped<IEmailSubscriptionRepository, EmailSubscriptionRepository>()
             .AddScoped<IFinanceInfoRepository, FinanceInfoRepository>()
-            .AddScoped<IAddExpense, AddExpense>()
-            .AddScoped<IUpdateExpense, UpdateExpense>()
             .AddScoped<GetFinanceData>()
             .AddScoped<PutExpense>()
             .AddScoped<UpdateExpenses>()

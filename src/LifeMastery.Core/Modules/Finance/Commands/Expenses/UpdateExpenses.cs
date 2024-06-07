@@ -2,23 +2,13 @@
 using LifeMastery.Core.Modules.Finance.Repositories;
 using LifeMastery.Core.Modules.Finance.Services.Abstractions;
 
-namespace LifeMastery.Core.Modules.Finance.Commands;
+namespace LifeMastery.Core.Modules.Finance.Commands.Expenses;
 
-public class UpdateExpenses : CommandBase
+public class UpdateExpenses(
+    IUnitOfWork unitOfWork,
+    IEmailSubscriptionRepository emailSubscriptionRepository,
+    IExpenseParser expenseParser) : CommandBase(unitOfWork)
 {
-    private readonly IEmailSubscriptionRepository emailSubscriptionRepository;
-    private readonly IExpenseParser expenseParser;
-
-    public UpdateExpenses(
-        IUnitOfWork unitOfWork,
-        IEmailSubscriptionRepository emailSubscriptionRepository,
-        IExpenseParser expenseParser)
-        : base(unitOfWork)
-    {
-        this.emailSubscriptionRepository = emailSubscriptionRepository;
-        this.expenseParser = expenseParser;
-    }
-
     protected override async Task OnExecute(CancellationToken token)
     {
         var emailSubs = await emailSubscriptionRepository.ListActiveWithExpenses(token);

@@ -2,7 +2,7 @@
 using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
-namespace LifeMastery.Core.Modules.Finance.Commands;
+namespace LifeMastery.Core.Modules.Finance.Commands.ExpenseCategories;
 
 public sealed class PutExpenseCategoryRequest
 {
@@ -11,17 +11,10 @@ public sealed class PutExpenseCategoryRequest
     public required bool IsFood { get; set; }
 }
 
-public sealed class PutExpenseCategory : CommandBase<PutExpenseCategoryRequest>
+public sealed class PutExpenseCategory(
+    IUnitOfWork unitOfWork,
+    IExpenseCategoryRepository expenseCategoryRepository) : CommandBase<PutExpenseCategoryRequest>(unitOfWork)
 {
-    private readonly IExpenseCategoryRepository expenseCategoryRepository;
-
-    public PutExpenseCategory(
-        IUnitOfWork unitOfWork, 
-        IExpenseCategoryRepository expenseCategoryRepository) : base(unitOfWork)
-    {
-        this.expenseCategoryRepository = expenseCategoryRepository;
-    }
-
     protected override async Task OnExecute(PutExpenseCategoryRequest request, CancellationToken token)
     {
         if (request.Id.HasValue)

@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using LifeMastery.Core.Modules.Finance.Commands;
+using LifeMastery.Core.Modules.Finance.Commands.RegularPayments;
 using System.Net;
 using System.Net.Http.Json;
 

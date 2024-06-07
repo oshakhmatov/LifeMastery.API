@@ -2,24 +2,19 @@
 using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
-namespace LifeMastery.Core.Modules.Finance.Commands;
+namespace LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
 
 public sealed class PutEmailSubscriptionRequest
 {
     public int? Id { get; set; }
-    public string Email { get; set; }
-    public bool IsActive { get; set; }
+    public required string Email { get; set; }
+    public required bool IsActive { get; set; }
 }
 
-public sealed class PutEmailSubscription : CommandBase<PutEmailSubscriptionRequest>
+public sealed class PutEmailSubscription(
+    IUnitOfWork unitOfWork,
+    IEmailSubscriptionRepository emailSubscriptionRepository) : CommandBase<PutEmailSubscriptionRequest>(unitOfWork)
 {
-    private readonly IEmailSubscriptionRepository emailSubscriptionRepository;
-
-    public PutEmailSubscription(IUnitOfWork unitOfWork, IEmailSubscriptionRepository emailSubscriptionRepository) : base(unitOfWork)
-    {
-        this.emailSubscriptionRepository = emailSubscriptionRepository;
-    }
-
     protected override async Task OnExecute(PutEmailSubscriptionRequest request, CancellationToken token)
     {
         if (request.Id.HasValue)
