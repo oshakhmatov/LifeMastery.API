@@ -26,7 +26,7 @@ public sealed class UpdateExpenseTests : TestBase
         var command = fixture.Create<PutExpenseRequest>();
 
         var expense = fixture.Create<Expense>();
-        expenseRepository.Setup(repo => repo.Get(command.ExpenseId.Value, CancellationToken.None)).ReturnsAsync(expense);
+        expenseRepository.Setup(repo => repo.Get(command.Id.Value, CancellationToken.None)).ReturnsAsync(expense);
 
         var category = fixture.Create<ExpenseCategory>();
         expenseCategoryRepository.Setup(repo => repo.Get(command.CategoryId!.Value, CancellationToken.None)).ReturnsAsync(category);
@@ -46,7 +46,7 @@ public sealed class UpdateExpenseTests : TestBase
         // Arrange
         var command = fixture.Create<PutExpenseRequest>();
 
-        expenseRepository.Setup(repo => repo.Get(command.ExpenseId.Value, CancellationToken.None)).ReturnsAsync((Expense)null);
+        expenseRepository.Setup(repo => repo.Get(command.Id.Value, CancellationToken.None)).ReturnsAsync((Expense)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ApplicationException>(() => sut.Execute(command));
