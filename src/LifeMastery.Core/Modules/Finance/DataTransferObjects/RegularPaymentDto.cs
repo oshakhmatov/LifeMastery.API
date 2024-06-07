@@ -8,6 +8,7 @@ public sealed class RegularPaymentDto
     public int Id { get; set; }
     public string Name { get; set; }
     public decimal? Amount { get; set; }
+    public decimal? ApproximateAmount { get; set; }
     public Period Period { get; set; }
     public int? DeadlineDay { get; set; }
     public int? DeadlineMonth { get; set; }
@@ -28,6 +29,7 @@ public static class RegularPaymentProjection
             Name = regularPayment.Name,
             IsAdvanced = regularPayment.IsAdvanced,
             Amount = regularPayment.Amount,
+            ApproximateAmount = GetApproximateAmount(regularPayment),
             Period = regularPayment.Period,
             IsPaid = regularPayment.IsPaid(),
             IsTax = regularPayment.IsTax,
@@ -36,5 +38,15 @@ public static class RegularPaymentProjection
             PayFromDay = regularPayment.PayFromDay,
             Payments = regularPayment.Payments.Select(p => PaymentDto.FromModel(p, regularPayment.Id)).ToArray()
         };
+    }
+
+    private static decimal? GetApproximateAmount(RegularPayment regularPayment)
+    {
+        if (regularPayment.Amount != null)
+        {
+            return null;
+        }
+
+        return regularPayment.Payments.Average(p => p.Amount);
     }
 }
