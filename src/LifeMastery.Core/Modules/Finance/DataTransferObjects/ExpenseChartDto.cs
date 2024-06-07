@@ -2,6 +2,7 @@
 
 public class ExpenseChartDto
 {
-    public string[] Labels { get; set; }
-    public long[] Values { get; set; }
+    public required string[] Labels { get; init; }
+    public required long[] Values { get; init; }
+    public required string[] Colors { get; init; }
 }

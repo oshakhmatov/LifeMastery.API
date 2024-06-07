@@ -8,7 +8,8 @@ public sealed class PutExpenseCategoryRequest
 {
     public int? Id { get; set; }
     public required string Name { get; init; }
-    public required bool IsFood { get; set; }
+    public required bool IsFood { get; init; }
+    public string? Color { get; set; }
 }
 
 public sealed class PutExpenseCategory(
@@ -24,6 +25,7 @@ public sealed class PutExpenseCategory(
 
             expenseCategory.Name = request.Name;
             expenseCategory.IsFood = request.IsFood;
+            expenseCategory.Color = request.Color;
         }
         else
         {
@@ -31,7 +33,10 @@ public sealed class PutExpenseCategory(
             if (existingCategory is not null)
                 throw new Exception($"Expense category with name '{request.Name}' already exists.");
 
-            expenseCategoryRepository.Put(new ExpenseCategory(request.Name, request.IsFood));
+            expenseCategoryRepository.Put(new ExpenseCategory(request.Name, request.IsFood)
+            {
+                Color = request.Color
+            });
         }
     }
 }

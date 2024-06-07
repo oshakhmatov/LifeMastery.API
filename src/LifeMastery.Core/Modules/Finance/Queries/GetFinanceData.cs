@@ -88,6 +88,7 @@ public sealed class GetFinanceData
             {
                 Labels = categorizedExpenses.Select(e => e.Key).ToArray(),
                 Values = categorizedExpenses.Select(e => (long) e.Select(e => e.Amount).Sum()).ToArray(),
+                Colors = categorizedExpenses.Select(e => e.Select(e => e.Category).First().Color).ToArray()
             },
             CurrentExpenseMonth = Array.IndexOf(expenseMonths, expenseMonths.FirstOrDefault(e => e.Year == year && e.Month == month)),
             ExpenseMonths = expenseMonths.Select(e => new ExpenseMonthDto

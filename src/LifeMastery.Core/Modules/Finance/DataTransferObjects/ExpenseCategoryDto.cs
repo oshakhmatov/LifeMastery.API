@@ -7,6 +7,7 @@ public class ExpenseCategoryDto
     public int Id { get; init; }
     public required string Name { get; init; }
     public required bool IsFood { get; init; }
+    public required string? Color { get; init; }
 
     public static ExpenseCategoryDto FromModel(ExpenseCategory expenseCategory)
     {
@@ -15,6 +16,7 @@ public class ExpenseCategoryDto
             Id = expenseCategory.Id,
             Name = expenseCategory.Name,
             IsFood = expenseCategory.IsFood,
+            Color = expenseCategory.Color
         };
     }
 }

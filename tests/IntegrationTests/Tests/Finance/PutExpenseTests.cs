@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using LifeMastery.Application.Modules.Finance.RequestHandlers;
+using LifeMastery.Core.Modules.Finance.Commands.Expenses;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -19,8 +19,6 @@ public sealed class PutExpenseTests : TestBase
     {
         // Arrange
         var request = fixture.Create<PutExpenseRequest>();
-        request.Id = null;
-        request.CategoryId = null;
 
         //Act
         var response = await _client.PutAsync("/api/finance/expenses", JsonContent.Create(request));

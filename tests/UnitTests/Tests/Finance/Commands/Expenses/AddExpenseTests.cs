@@ -10,20 +10,20 @@ public sealed class AddExpenseTests : TestBase
 {
     private readonly Mock<IExpenseRepository> expenseRepository;
     private readonly Mock<IExpenseCategoryRepository> expenseCategoryRepository;
-    private readonly AddExpense sut;
+    private readonly PutExpense sut;
 
     public AddExpenseTests()
     {
         expenseRepository = fixture.Freeze<Mock<IExpenseRepository>>();
         expenseCategoryRepository = fixture.Freeze<Mock<IExpenseCategoryRepository>>();
-        sut = fixture.Create<AddExpense>();
+        sut = fixture.Create<PutExpense>();
     }
 
     [Fact]
     public async Task WithExistingCategory_AddsExpense()
     {
         // Arrange
-        var command = fixture.Create<AddExpenseCommand>();
+        var command = fixture.Create<PutExpenseRequest>();
 
         // Act
         await sut.Execute(command);
@@ -37,7 +37,7 @@ public sealed class AddExpenseTests : TestBase
     public async Task WithNonExistingCategory_ThrowsException()
     {
         // Arrange
-        var command = fixture.Create<AddExpenseCommand>();
+        var command = fixture.Create<PutExpenseRequest>();
 
         expenseCategoryRepository.Setup(repo => repo.Get(command.CategoryId!.Value, CancellationToken.None)).ReturnsAsync((ExpenseCategory)null);
 

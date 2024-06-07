@@ -1,40 +1,48 @@
-﻿using LifeMastery.Core.Modules.Finance.Models;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
 namespace LifeMastery.Core.Modules.Finance.Commands.Expenses;
 
 public class PutExpenseRequest
 {
-    public required int? ExpenseId { get; init; }
+    public int? Id { get; init; }
     public required decimal Amount { get; init; }
-    public required DateOnly Date { get; init; }
-    public required string? Note { get; init; }
-    public required int? CategoryId { get; init; }
+    public DateTime? Date { get; set; }
+    public string? Note { get; init; }
+    public int? CategoryId { get; init; }
 }
 
 public class PutExpense(
     IExpenseRepository expenseRepository,
-    IExpenseCategoryRepository expenseCategoryRepository)
+    IExpenseCategoryRepository expenseCategoryRepository,
+    IUnitOfWork unitOfWork) : CommandBase<PutExpenseRequest>(unitOfWork)
 {
-    public async Task Execute(PutExpenseRequest command, CancellationToken token = default)
+    protected override async Task OnExecute(PutExpenseRequest command, CancellationToken token = default)
     {
-        if (command.ExpenseId is null)
+        var date = DateOnly.FromDateTime(DateTime.Today);
+        if (command.Date is not null)
+        {
+            date = DateOnly.FromDateTime(command.Date.Value);
+        }
+
+        if (command.Id is null)
         {
             expenseRepository.Put(new Expense(command.Amount)
             {
                 Note = command.Note,
-                Date = command.Date,
+                Date = date,
                 Category = await GetCategory(command.CategoryId, token)
             });
         }
         else
         {
-            var expenseToUpdate = await expenseRepository.Get(command.ExpenseId.Value, token)
-                ?? throw new ApplicationException($"Expense with ID '{command.ExpenseId}' was not found.");
+            var expenseToUpdate = await expenseRepository.Get(command.Id.Value, token)
+                ?? throw new ApplicationException($"Expense with ID '{command.Id}' was not found.");
 
             expenseToUpdate.Amount = command.Amount;
             expenseToUpdate.Note = command.Note;
-            expenseToUpdate.Date = command.Date;
+            expenseToUpdate.Date = date;
             expenseToUpdate.Category = await GetCategory(command.CategoryId, token);
         }
     }

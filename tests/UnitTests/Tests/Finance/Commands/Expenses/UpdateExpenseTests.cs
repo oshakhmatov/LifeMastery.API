@@ -10,23 +10,23 @@ public sealed class UpdateExpenseTests : TestBase
 {
     private readonly Mock<IExpenseRepository> expenseRepository;
     private readonly Mock<IExpenseCategoryRepository> expenseCategoryRepository;
-    private readonly UpdateExpense sut;
+    private readonly PutExpense sut;
 
     public UpdateExpenseTests()
     {
         expenseRepository = fixture.Freeze<Mock<IExpenseRepository>>();
         expenseCategoryRepository = fixture.Freeze<Mock<IExpenseCategoryRepository>>();
-        sut = fixture.Create<UpdateExpense>();
+        sut = fixture.Create<PutExpense>();
     }
 
     [Fact]
     public async Task ExpenseExists_UpdatesExpense()
     {
         // Arrange
-        var command = fixture.Create<UpdateExpenseCommand>();
+        var command = fixture.Create<PutExpenseRequest>();
 
         var expense = fixture.Create<Expense>();
-        expenseRepository.Setup(repo => repo.Get(command.ExpenseId, CancellationToken.None)).ReturnsAsync(expense);
+        expenseRepository.Setup(repo => repo.Get(command.ExpenseId.Value, CancellationToken.None)).ReturnsAsync(expense);
 
         var category = fixture.Create<ExpenseCategory>();
         expenseCategoryRepository.Setup(repo => repo.Get(command.CategoryId!.Value, CancellationToken.None)).ReturnsAsync(category);
@@ -44,9 +44,9 @@ public sealed class UpdateExpenseTests : TestBase
     public async Task ExpenseNotExists_ThrowsException()
     {
         // Arrange
-        var command = fixture.Create<UpdateExpenseCommand>();
+        var command = fixture.Create<PutExpenseRequest>();
 
-        expenseRepository.Setup(repo => repo.Get(command.ExpenseId, CancellationToken.None)).ReturnsAsync((Expense)null);
+        expenseRepository.Setup(repo => repo.Get(command.ExpenseId.Value, CancellationToken.None)).ReturnsAsync((Expense)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ApplicationException>(() => sut.Execute(command));
