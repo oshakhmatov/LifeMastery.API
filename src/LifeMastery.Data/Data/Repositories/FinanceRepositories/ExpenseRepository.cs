@@ -40,13 +40,14 @@ public sealed class ExpenseRepository : RepositoryBase<Expense>, IExpenseReposit
     public async Task<ExpenseMonthDto[]> GetExpenseMonths(CancellationToken token = default)
     {
         return await dbContext.Expenses
-            .OrderByDescending(e => e.Date)
             .Select(e => new ExpenseMonthDto
             {
                 Month = e.Date.Month,
                 Year = e.Date.Year
             })
             .Distinct()
+            .OrderByDescending(e => e.Year)
+            .ThenBy(e => e.Month)
             .ToArrayAsync(token);
     } 
 }
