@@ -9,6 +9,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:81", "http://localhost:4200");
+        });
+});
+
 var app = builder.Build();
 
 using var scope = app.Services.CreateScope();
@@ -25,12 +34,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.UseCors(x =>
-{
-    x.AllowAnyMethod();
-    x.AllowAnyHeader();
-    x.WithOrigins("http://localhost:81", "http://localhost:4200");
-});
+app.UseCors();
 
 app.MapControllers();
 
