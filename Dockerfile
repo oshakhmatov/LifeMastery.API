@@ -4,14 +4,10 @@ WORKDIR /app
 
 # Copy the solution file and restore dependencies
 COPY . ./
-RUN dotnet build -c Release -o /app/build
-
-# Publish the app
-FROM build AS publish
-RUN dotnet publish src/LifeMastery.API/LifeMastery.API.csproj -c Release -o /app/publish
+RUN dotnet publish src/LifeMastery.API/LifeMastery.API.csproj -c release -o /app/publish
 
 # Use the official Microsoft .NET Core runtime image as the base image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish ./
 ENTRYPOINT ["dotnet", "LifeMastery.API.dll"]
