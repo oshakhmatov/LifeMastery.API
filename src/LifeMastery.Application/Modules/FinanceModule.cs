@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
+﻿using LifeMastery.Core.Modules.Finance.Commands.Currencies;
+using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCategories;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCreationRules;
 using LifeMastery.Core.Modules.Finance.Commands.Expenses;
@@ -28,7 +29,7 @@ public static class FinanceModule
             .AddScoped<IRegularPaymentRepository, RegularPaymentRepository>()
             .AddScoped<IEmailSubscriptionRepository, EmailSubscriptionRepository>()
             .AddScoped<IFinanceInfoRepository, FinanceInfoRepository>()
-            .AddScoped<GetFinanceData>()
+            .AddScoped<ICurrencyRepository, CurrencyRepository>()
             .AddScoped<PutExpense>()
             .AddScoped<UpdateExpenses>()
             .AddScoped<LoadExpenses>()
@@ -43,6 +44,9 @@ public static class FinanceModule
             .AddScoped<RemoveEmailSubscription>()
             .AddScoped<PutPayment>()
             .AddScoped<RemovePayment>()
-            .AddScoped<PutFinanceInfo>();
+            .AddScoped<PutFinanceInfo>()
+            .AddScoped<PutCurrency>()
+            .AddScoped<RemoveCurrency>()
+            .AddScoped<GetFinanceData>();
     }
 }

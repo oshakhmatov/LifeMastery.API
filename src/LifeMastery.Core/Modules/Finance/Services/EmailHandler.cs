@@ -4,28 +4,14 @@ using LifeMastery.Core.Modules.Finance.Services.Abstractions;
 
 namespace LifeMastery.Core.Modules.Finance.Services;
 
-public class EmailHandler
+public class EmailHandler(
+    IEmailProvider emailProvider,
+    IExpenseParser expenseParser,
+    IExpenseRepository expenseRepository,
+    IUnitOfWork unitOfWork,
+    IEmailSubscriptionRepository emailSubscriptionRepository,
+    ICurrencyRepository currencyRepository)
 {
-    private readonly IEmailProvider emailProvider;
-    private readonly IExpenseRepository expenseRepository;
-    private readonly IExpenseParser expenseParser;
-    private readonly IUnitOfWork unitOfWork;
-    private readonly IEmailSubscriptionRepository emailSubscriptionRepository;
-
-    public EmailHandler(
-        IEmailProvider emailProvider,
-        IExpenseParser expenseParser,
-        IExpenseRepository expenseRepository,
-        IUnitOfWork unitOfWork,
-        IEmailSubscriptionRepository emailSubscriptionRepository)
-    {
-        this.emailProvider = emailProvider;
-        this.expenseParser = expenseParser;
-        this.expenseRepository = expenseRepository;
-        this.unitOfWork = unitOfWork;
-        this.emailSubscriptionRepository = emailSubscriptionRepository;
-    }
-
     public async Task HandleInbox(CancellationToken cancellationToken)
     {
         var emailSubs = await emailSubscriptionRepository.ListActive(cancellationToken);
@@ -39,7 +25,7 @@ public class EmailHandler
 
             foreach (var content in contents)
             {
-                var existingExpense = await expenseRepository.GetBySource(content);
+                var existingExpense = await expenseRepository.GetBySource(content, cancellationToken);
                 if (existingExpense != null)
                     continue;
 
@@ -47,9 +33,13 @@ public class EmailHandler
                 if (parsedExpense == null)
                     continue;
 
-                var expense = new Expense(parsedExpense.Amount)
+                var currency = await currencyRepository.GetByName(parsedExpense.Currency, cancellationToken) 
+                    ?? throw new ApplicationException($"Currency '{parsedExpense.Currency}' was not found.");
+
+                var expense = new Expense(parsedExpense.Amount, currency)
                 {
                     Source = content,
+                    ParsedPlace = parsedExpense.Place,
                     Date = parsedExpense.Date,
                     EmailSubscription = emailSubscription
                 };

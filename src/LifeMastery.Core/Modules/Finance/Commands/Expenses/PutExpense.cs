@@ -8,7 +8,8 @@ public class PutExpenseRequest
 {
     public int? Id { get; init; }
     public required decimal Amount { get; init; }
-    public DateTime? Date { get; set; }
+    public required int CurrencyId { get; init; }
+    public DateTime? Date { get; init; }
     public string? Note { get; init; }
     public int? CategoryId { get; init; }
 }
@@ -16,6 +17,7 @@ public class PutExpenseRequest
 public class PutExpense(
     IExpenseRepository expenseRepository,
     IExpenseCategoryRepository expenseCategoryRepository,
+    ICurrencyRepository currencyRepository,
     IUnitOfWork unitOfWork) : CommandBase<PutExpenseRequest>(unitOfWork)
 {
     protected override async Task OnExecute(PutExpenseRequest command, CancellationToken token = default)
@@ -28,7 +30,7 @@ public class PutExpense(
 
         if (command.Id is null)
         {
-            expenseRepository.Put(new Expense(command.Amount)
+            expenseRepository.Put(new Expense(command.Amount, await GetCurrency(command.CurrencyId, token))
             {
                 Note = command.Note,
                 Date = date,
@@ -44,6 +46,7 @@ public class PutExpense(
             expenseToUpdate.Note = command.Note;
             expenseToUpdate.Date = date;
             expenseToUpdate.Category = await GetCategory(command.CategoryId, token);
+            expenseToUpdate.Currency = await GetCurrency(command.CurrencyId, token);
         }
     }
 
@@ -54,5 +57,11 @@ public class PutExpense(
 
         return await expenseCategoryRepository.Get(categoryId.Value, token)
             ?? throw new ApplicationException($"Expense category with ID '{categoryId.Value}' was not found.");
+    }
+
+    private async Task<Currency> GetCurrency(int currencyId, CancellationToken token = default)
+    {
+        return await currencyRepository.Get(currencyId, token)
+            ?? throw new ApplicationException($"Currency with ID '{currencyId}' was not found.");
     }
 }

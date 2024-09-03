@@ -7,6 +7,7 @@ namespace LifeMastery.Core.Modules.Finance.Commands.Expenses;
 public class UpdateExpenses(
     IUnitOfWork unitOfWork,
     IEmailSubscriptionRepository emailSubscriptionRepository,
+    ICurrencyRepository currencyRepository,
     IExpenseParser expenseParser) : CommandBase(unitOfWork)
 {
     protected override async Task OnExecute(CancellationToken token)
@@ -29,7 +30,13 @@ public class UpdateExpenses(
                 if (parsedExpense == null)
                     continue;
 
-                var rule = emailSub.Rules.FirstOrDefault(r => r.Place == parsedExpense.Place);
+                var currency = await currencyRepository.GetByName(parsedExpense.Currency, token)
+                    ?? throw new ApplicationException($"Currency '{parsedExpense.Currency}' was not found.");
+
+                expense.ParsedPlace = parsedExpense.Place;
+                expense.Currency = currency;
+
+                var rule = emailSub.Rules.FirstOrDefault(r => parsedExpense.Place.Contains(r.Place, StringComparison.OrdinalIgnoreCase));
                 if (rule != null)
                 {
                     expense.Category = rule.Category;

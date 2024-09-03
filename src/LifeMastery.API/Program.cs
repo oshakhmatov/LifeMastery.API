@@ -29,6 +29,8 @@ app.UseCors(x =>
 });
 app.UseAuthorization();
 app.MapControllers();
-app.Run("http://*:80");
+
+var appUrl = app.Environment.IsDevelopment() ? "http://*:82" : "http://*:80";
+app.Run(appUrl);
 
 public partial class Program { }

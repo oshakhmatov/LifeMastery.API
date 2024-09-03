@@ -2,7 +2,8 @@
 
 public class ParsedExpenseDto
 {
-    public decimal Amount { get; set; }
-    public string Place { get; set; }
-    public DateOnly Date { get; set; }
+    public required decimal Amount { get; init; }
+    public required string Place { get; init; }
+    public required string Currency { get; init; }
+    public required DateOnly Date { get; init; }
 }

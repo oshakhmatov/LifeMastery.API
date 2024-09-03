@@ -1,52 +1,41 @@
 ﻿using LifeMastery.Core.Common;
-using LifeMastery.Core.Modules.Finance.Commands;
 using LifeMastery.Core.Modules.Finance.DataTransferObjects;
 using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
-using System;
 
 namespace LifeMastery.Core.Modules.Finance.Queries;
 
 public sealed class GetFinanceDataRequest
 {
+    public int? CurrencyId { get; set; }
     public int? Year { get; set; }
     public int? Month { get; set; }
 }
 
-public sealed class GetFinanceData
+public sealed class GetFinanceData(
+    IExpenseRepository expenseRepository,
+    IExpenseCategoryRepository expenseCategoryRepository,
+    IRegularPaymentRepository regularPaymentRepository,
+    IEmailSubscriptionRepository emailSubscriptionRepository,
+    IFinanceInfoRepository financeInfoRepository,
+    ICurrencyRepository currencyRepository)
 {
-    private readonly IExpenseRepository expenseRepository;
-    private readonly IExpenseCategoryRepository expenseCategoryRepository;
-    private readonly IRegularPaymentRepository regularPaymentRepository;
-    private readonly IEmailSubscriptionRepository emailSubscriptionRepository;
-    private readonly IFinanceInfoRepository financeInfoRepository;
-
-    public GetFinanceData(
-        IExpenseRepository expenseRepository,
-        IExpenseCategoryRepository expenseCategoryRepository,
-        IRegularPaymentRepository regularPaymentRepository,
-        IEmailSubscriptionRepository emailSubscriptionRepository,
-        IFinanceInfoRepository financeInfoRepository)
-    {
-        this.expenseRepository = expenseRepository;
-        this.expenseCategoryRepository = expenseCategoryRepository;
-        this.regularPaymentRepository = regularPaymentRepository;
-        this.emailSubscriptionRepository = emailSubscriptionRepository;
-        this.financeInfoRepository = financeInfoRepository;
-    }
-
-    public async Task<FinanceViewModel> Execute(GetFinanceDataRequest request, CancellationToken cancellationToken)
+    public async Task<FinanceViewModel> Execute(GetFinanceDataRequest request, CancellationToken token)
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
         var year = request.Year ?? today.Year;
         var month = request.Month ?? today.Month;
 
-        var expenseMonths = await expenseRepository.GetExpenseMonths(cancellationToken);
-        var expenses = await expenseRepository.List(year, month, cancellationToken);
-        var expenseCategories = await expenseCategoryRepository.List(cancellationToken);
-        var regularPayments = await regularPaymentRepository.List(cancellationToken);
-        var emailSubscriptions = await emailSubscriptionRepository.List(cancellationToken);
-        var info = await financeInfoRepository.Get(cancellationToken);
+        var expenseMonths = await expenseRepository.GetExpenseMonths(token);
+        var expenses = await expenseRepository.List(year, month, token);
+        var expenseCategories = await expenseCategoryRepository.List(token);
+        var currencies = await currencyRepository.List(token);
+        var regularPayments = await regularPaymentRepository.List(token);
+        var emailSubscriptions = await emailSubscriptionRepository.List(token);
+        var info = await financeInfoRepository.Get(token);
+
+        //if (request.CurrencyId != null) { 
+        //}
 
         var taxRegularPayments = regularPayments
             .Where(p => p.IsTax)
@@ -81,15 +70,21 @@ public sealed class GetFinanceData
                 Expenses = g.Select(ExpenseDto.FromModel).ToArray()
 
             }).ToArray(),
+            Currencies = currencies.Select(CurrencyDto.FromModel).ToArray(),
             ExpenseCategories = expenseCategories.Select(ExpenseCategoryDto.FromModel).ToArray(),
-            RegularPayments = regularPayments.Select(rp => rp.ToDto()).ToArray(),
-            EmailSubscriptions = emailSubscriptions.Select(EmailSubscriptionDto.FromModel).ToArray(),
+            RegularPayments = regularPayments
+                .Select(rp => rp.ToDto())
+                .OrderBy(rp => rp.IsPaid)
+                .ThenBy(rp => rp.Name)
+                .ToArray(),
+            EmailSubscriptions = emailSubscriptions.Select(es => es.ToDto()).ToArray(),
             ExpenseChart = new ExpenseChartDto
             {
                 Labels = categorizedExpenses.Select(e => e.Key).ToArray(),
                 Values = categorizedExpenses.Select(e => (long) e.Select(e => e.Amount).Sum()).ToArray(),
-                Colors = categorizedExpenses.Select(e => e.Select(e => e.Category).First().Color).ToArray()
+                Colors = categorizedExpenses.Select(e => e.Select(e => e.Category!).First().Color).ToArray()
             },
+            CurrentCurrency = 0,
             CurrentExpenseMonth = Array.IndexOf(expenseMonths, expenseMonths.FirstOrDefault(e => e.Year == year && e.Month == month)),
             ExpenseMonths = expenseMonths.Select(e => new ExpenseMonthDto
             {
@@ -110,7 +105,7 @@ public sealed class GetFinanceData
         };
     }
 
-    private decimal? GetRemainingAmountPercent(decimal? income, Expense[] expenses, Payment[] payments)
+    private static decimal? GetRemainingAmountPercent(decimal? income, Expense[] expenses, Payment[] payments)
     {
         if (income == null)
         {

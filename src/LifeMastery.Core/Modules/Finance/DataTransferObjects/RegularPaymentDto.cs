@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Enums;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.Enums;
 using LifeMastery.Core.Modules.Finance.Models;
 
 namespace LifeMastery.Core.Modules.Finance.DataTransferObjects;
@@ -47,6 +48,6 @@ public static class RegularPaymentProjection
             return null;
         }
 
-        return regularPayment.Payments.Average(p => p.Amount);
+        return MathHelper.Round(regularPayment.Payments.Average(p => p.Amount));
     }
 }

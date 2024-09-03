@@ -27,6 +27,7 @@ public sealed class AppDbContext : DbContext, IUnitOfWork
     public DbSet<EmailSubscription> EmailSubscriptions { get; set; }
     public DbSet<ExpenseCreationRule> ExpenseCreationRules { get; set; }
     public DbSet<FinanceInfo> FinanceInfo { get; set; }
+    public DbSet<Currency> Currencies { get; set; }
 
     public async Task Commit()
     {

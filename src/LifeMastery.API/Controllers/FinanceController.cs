@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
+﻿using LifeMastery.Core.Modules.Finance.Commands.Currencies;
+using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCategories;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCreationRules;
 using LifeMastery.Core.Modules.Finance.Commands.Expenses;
@@ -18,97 +19,97 @@ public class FinanceController : ApiControllerBase
     public async Task<FinanceViewModel> GetFinanceData(
         [FromServices] GetFinanceData getExpenses,
         [FromQuery] GetFinanceDataRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        return await getExpenses.Execute(request, cancellationToken);
+        return await getExpenses.Execute(request, token);
     }
 
     [HttpPut("expenses")]
     public async Task PutExpense(
         [FromServices] PutExpense putExpense,
         [FromBody] PutExpenseRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await putExpense.Execute(request, cancellationToken);
+        await putExpense.Execute(request, token);
     }
 
     [HttpPost("expenses/update")]
     public async Task UpdateExpenses(
         [FromServices] UpdateExpenses updateExpenses,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await updateExpenses.Execute(cancellationToken);
+        await updateExpenses.Execute(token);
     }
 
     [HttpPost("expenses/load")]
     public async Task LoadExpenses(
         [FromServices] LoadExpenses loadExpenses,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await loadExpenses.Execute(cancellationToken);
+        await loadExpenses.Execute(token);
     }
 
     [HttpDelete("expenses/{id}")]
     public async Task RemoveExpense(
         [FromServices] RemoveExpense removeExpense,
         int id,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await removeExpense.Execute(id, cancellationToken);
+        await removeExpense.Execute(id, token);
     }
 
     [HttpPut("expense-categories")]
     public async Task PutExpenseCategory(
        [FromServices] PutExpenseCategory putExpenseCategory,
        [FromBody] PutExpenseCategoryRequest request,
-       CancellationToken cancellationToken)
+       CancellationToken token)
     {
-        await putExpenseCategory.Execute(request, cancellationToken);
+        await putExpenseCategory.Execute(request, token);
     }
 
     [HttpDelete("expense-categories/{id}")]
     public async Task RemoveExpenseCategory(
         [FromServices] RemoveExpenseCategory removeExpenseCategory,
         int id,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await removeExpenseCategory.Execute(id, cancellationToken);
+        await removeExpenseCategory.Execute(id, token);
     }
 
     [HttpPut("regular-payments")]
     public async Task PutRegularPayment(
         [FromServices] PutRegularPayment putRegularPayment,
         [FromBody] PutRegularPaymentRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await putRegularPayment.Execute(request, cancellationToken);
+        await putRegularPayment.Execute(request, token);
     }
 
     [HttpDelete("regular-payments/{id}")]
     public async Task RemoveRegularPayment(
         [FromServices] RemoveRegularPayment removeRegularPayment,
         int id,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await removeRegularPayment.Execute(id, cancellationToken);
+        await removeRegularPayment.Execute(id, token);
     }
 
     [HttpPut("email-subscriptions")]
     public async Task PutEmailSubscription(
         [FromServices] PutEmailSubscription putEmailSubscription,
         [FromBody] PutEmailSubscriptionRequest request,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await putEmailSubscription.Execute(request, cancellationToken);
+        await putEmailSubscription.Execute(request, token);
     }
 
     [HttpDelete("email-subscriptions/{id}")]
     public async Task RemoveEmailSubscription(
         [FromServices] RemoveEmailSubscription removeEmailSubscription,
         int id,
-        CancellationToken cancellationToken)
+        CancellationToken token)
     {
-        await removeEmailSubscription.Execute(id, cancellationToken);
+        await removeEmailSubscription.Execute(id, token);
     }
 
     [HttpPut("expense-creation-rules")]
@@ -154,5 +155,23 @@ public class FinanceController : ApiControllerBase
         CancellationToken token)
     {
         await putFinanceInfo.Execute(command, token);
+    }
+
+    [HttpPut("currencies")]
+    public async Task PutCurrency(
+        [FromServices] PutCurrency putCurrency,
+        [FromBody] PutCurrencyRequest command,
+        CancellationToken token)
+    {
+        await putCurrency.Execute(command, token);
+    }
+
+    [HttpDelete("currencies/{id}")]
+    public async Task RemoveCurrency(
+        [FromServices] RemoveCurrency removeCurrency,
+        int id,
+        CancellationToken token)
+    {
+        await removeCurrency.Execute(id, token);
     }
 }
