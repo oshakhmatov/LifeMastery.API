@@ -25,7 +25,8 @@ public class ExpenseDto
             CategoryName = expense.Category?.Name,
             Note = expense.Note,
             Date = expense.Date,
-            Source = expense.Source,
+            //Source = expense.Source,
+            Source = expense.ParsedPlace,
             ParsedPlace = expense.ParsedPlace
         };
     }

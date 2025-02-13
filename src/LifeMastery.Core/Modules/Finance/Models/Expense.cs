@@ -7,6 +7,7 @@ public class Expense
     public string? Note { get; set; }
     public DateOnly Date { get; set; }
     public string? Source { get; set; }
+    public string? TransactionId { get; set; }
     public string? ParsedPlace { get; set; }
 
     public Currency? Currency { get; set; }

@@ -8,66 +8,108 @@ public class RaiffeisenExpenseParserTests
     [Fact]
     public void AmountWithCommaAndDot_ReturnsCorrectlyParsedAmount()
     {
-        // Arrange
         var expected = new ParsedExpenseDto
         {
             Amount = 1430.70m,
             Date = new DateOnly(2024, 1, 18),
             Place = "Mikromarket 110 Novi Sad RS",
-            Currency = "RSD"
+            Currency = "RSD",
+            TransactionId = "367114926249",
+            Source = @"<Stavke DatumValute=""18.01.2024"" 
+                    NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
+                    Opis=""535683******9996 / Iznos transakcije: 1.430,70 u valuti RSD"" 
+                    Referenca=""367114926249"" />"
         };
 
         var cut = new RaiffeisenExpenseParser();
 
-        // Act
-        var result = cut.Parse("Koriscenje kartice 5356**9996\r\nDatum: 18.01.2024\r\nIznos: 1.430,70 RSD\r\nMesto: Mikromarket 110 Novi Sad RS\r\nStanje: ***");
+        var xmlContent = @"
+        <TransakcioniRacunPrivredaPromet>
+            <Stavke DatumValute=""18.01.2024"" 
+                    NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
+                    Opis=""535683******9996 / Iznos transakcije: 1.430,70 u valuti RSD"" 
+                    Referenca=""367114926249"" />
+        </TransakcioniRacunPrivredaPromet>";
 
-        // Assert
-        Assert.Equal(expected.Amount, result.Amount);
+        var result = cut.Parse(xmlContent);
+
+        Assert.NotNull(result);
+        Assert.Equal(expected.Amount, result[0].Amount);
+        Assert.Equal(expected.Date, result[0].Date);
+        Assert.Equal(expected.Place, result[0].Place);
+        Assert.Equal(expected.Currency, result[0].Currency);
+        Assert.Equal(expected.TransactionId, result[0].TransactionId);
     }
 
     [Fact]
     public void AmountWithComma_ReturnsCorrectlyParsedAmount()
     {
-        // Arrange
         var expected = new ParsedExpenseDto
         {
             Amount = 901.29m,
             Date = new DateOnly(2024, 1, 18),
             Place = "Mikromarket 110 Novi Sad RS",
-            Currency = "RSD"
+            Currency = "RSD",
+            TransactionId = "367114926250",
+            Source = @"<Stavke DatumValute=""18.01.2024"" 
+                    NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
+                    Opis=""535683******9996 / Iznos transakcije: 901,29 u valuti RSD"" 
+                    Referenca=""367114926250"" />"
         };
 
         var cut = new RaiffeisenExpenseParser();
 
-        // Act
-        var result = cut.Parse("Koriscenje kartice 5356**9996\r\nDatum: 18.01.2024\r\nIznos: 901,29 RSD\r\nMesto: Mikromarket 110 Novi Sad RS\r\nStanje: ***");
+        var xmlContent = @"
+        <TransakcioniRacunPrivredaPromet>
+            <Stavke DatumValute=""18.01.2024"" 
+                    NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
+                    Opis=""535683******9996 / Iznos transakcije: 901,29 u valuti RSD"" 
+                    Referenca=""367114926250"" />
+        </TransakcioniRacunPrivredaPromet>";
 
-        // Assert
-        Assert.Equal(expected.Amount, result.Amount);
+        var result = cut.Parse(xmlContent);
+
+        Assert.NotNull(result);
+        Assert.Equal(expected.Amount, result[0].Amount);
+        Assert.Equal(expected.Date, result[0].Date);
+        Assert.Equal(expected.Place, result[0].Place);
+        Assert.Equal(expected.Currency, result[0].Currency);
+        Assert.Equal(expected.TransactionId, result[0].TransactionId);
     }
 
     [Fact]
     public void CommonInput_ReturnsCorrectlyParsedValues()
     {
-        // Arrange
         var expected = new ParsedExpenseDto
         {
             Amount = 901.29m,
             Date = new DateOnly(2024, 1, 18),
             Place = "Mikromarket 110 Novi Sad RS",
-            Currency = "RSD"
+            Currency = "RSD",
+            TransactionId = "367114926251",
+            Source = @"<Stavke DatumValute=""18.01.2024"" 
+                    NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
+                    Opis=""535683******9996 / Iznos transakcije: 901,29 у valuti RSD"" 
+                    Referenca=""367114926251"" />"
         };
 
         var cut = new RaiffeisenExpenseParser();
 
-        // Act
-        var result = cut.Parse("Koriscenje kartice 5356**9996\r\nDatum: 18.01.2024\r\nIznos: 901,29 RSD\r\nMesto: Mikromarket 110 Novi Sad RS\r\nStanje: ***");
+        var xmlContent = @"
+        <TransakcioniRacunPrivredaPromet>
+            <Stavke DatumValute=""18.01.2024"" 
+                    NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
+                    Opis=""535683******9996 / Iznos transakcije: 901,29 у valuti RSD"" 
+                    Referenca=""367114926251"" />
+        </TransakcioniRacunPrivredaPromet>";
 
-        // Assert
+        var result = cut.Parse(xmlContent);
+
         Assert.NotNull(result);
-        Assert.Equal(expected.Date, result.Date);
-        Assert.Equal(expected.Place, result.Place);
-        Assert.Equal(expected.Currency, result.Currency);
+        Assert.Equal(expected.Amount, result[0].Amount);
+        Assert.Equal(expected.Date, result[0].Date);
+        Assert.Equal(expected.Place, result[0].Place);
+        Assert.Equal(expected.Currency, result[0].Currency);
+        Assert.Equal(expected.TransactionId, result[0].TransactionId);
     }
 }

@@ -11,28 +11,24 @@ using System.Text;
 
 namespace LifeMastery.Infrastructure.Services;
 
-public class EmailProvider : IEmailProvider
+public class EmailProvider(IOptionsSnapshot<EmailProviderOptions> optionsSnapshot) : IEmailProvider
 {
-    private readonly EmailProviderOptions options;
+    private readonly EmailProviderOptions options = optionsSnapshot.Value;
 
-    public EmailProvider(IOptionsSnapshot<EmailProviderOptions> optionsSnapshot)
-    {
-        options = optionsSnapshot.Value;
-    }
-
-    public async Task<EmailMessage[]> GetMessages(string sender, CancellationToken cancellationToken)
+    public async Task<string?[]> GetMessages(string sender, CancellationToken cancellationToken)
     {
         using var client = new ImapClient();
 
         await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect, cancellationToken: cancellationToken);
         await client.AuthenticateAsync(options.UserName, options.Password, cancellationToken);
 
-        var inbox = client.Inbox;
-        await inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
+        var folder = await client.GetFolderAsync("Reiffeisen", cancellationToken);
 
-        var uids = await inbox.SearchAsync(SearchQuery.FromContains(sender), cancellationToken);
+        await folder.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
 
-        var emailMessages = ParseMessages(inbox, uids).ToArray();
+        var uids = await folder.SearchAsync(SearchQuery.All, cancellationToken);
+
+        var emailMessages = ParseMessages(folder, uids).ToArray();
 
         await client.DisconnectAsync(quit: true, cancellationToken: cancellationToken);
 
@@ -46,32 +42,28 @@ public class EmailProvider : IEmailProvider
         await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect, cancellationToken: cancellationToken);
         await client.AuthenticateAsync(options.UserName, options.Password, cancellationToken);
 
-        var inbox = client.Inbox;
-        await inbox.OpenAsync(FolderAccess.ReadWrite, cancellationToken);
+        var folder = await client.GetFolderAsync("Reiffeisen", cancellationToken);
+        await folder.OpenAsync(FolderAccess.ReadWrite, cancellationToken);
 
-        var uids = await inbox.SearchAsync(SearchQuery.FromContains(sender), cancellationToken);
+        var uids = await folder.SearchAsync(SearchQuery.All, cancellationToken);
 
         foreach (var uid in uids)
         {
-            inbox.AddFlags(uid, MessageFlags.Deleted, silent: true, cancellationToken: cancellationToken);
+            folder.AddFlags(uid, MessageFlags.Deleted, silent: true, cancellationToken: cancellationToken);
         }
 
-        await inbox.ExpungeAsync(cancellationToken);
+        await folder.ExpungeAsync(cancellationToken);
 
         await client.DisconnectAsync(quit: true, cancellationToken: cancellationToken);
     }
 
-    static IEnumerable<EmailMessage> ParseMessages(IMailFolder inbox, IList<UniqueId> messageIds)
+    static IEnumerable<string?> ParseMessages(IMailFolder folder, IList<UniqueId> messageIds)
     {
         foreach (var messageId in messageIds)
         {
-            var message = inbox.GetMessage(messageId);
+            var message = folder.GetMessage(messageId);
 
-            yield return new EmailMessage
-            {
-                Subject = message.Subject,
-                AttachmentContents = DecodeAttachmentsToStrings(message.Attachments).ToArray()
-            };
+            yield return DecodeAttachmentsToStrings(message.Attachments).FirstOrDefault();
         }
     }
 

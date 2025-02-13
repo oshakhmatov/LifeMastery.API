@@ -2,6 +2,6 @@
 
 public class EmailMessage
 {
-    public string Subject { get; set; }
-    public string[] AttachmentContents { get; set; }
+    public required string Subject { get; init; }
+    public required string Content { get; init; }
 }

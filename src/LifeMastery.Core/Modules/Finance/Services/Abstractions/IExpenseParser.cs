@@ -4,5 +4,5 @@ namespace LifeMastery.Core.Modules.Finance.Services.Abstractions;
 
 public interface IExpenseParser
 {
-    public ParsedExpenseDto? Parse(string content);
+    public ParsedExpenseDto[] Parse(string content);
 }

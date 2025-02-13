@@ -19,7 +19,7 @@ public sealed class ExpenseRepository : RepositoryBase<Expense>, IExpenseReposit
             .FirstOrDefaultAsync(token);
     }
 
-    public async Task<Expense?> GetBySource(string source, CancellationToken token = default)
+    public async Task<Expense?> GetByTransactionId(string source, CancellationToken token = default)
     {
         return await dbContext.Expenses
             .Include(e => e.Category)

@@ -23,20 +23,10 @@ public class UpdateExpenses(
 
             foreach (var expense in emailSub.Expenses)
             {
-                if (expense.Source == null)
+                if (expense.ParsedPlace == null)
                     continue;
 
-                var parsedExpense = expenseParser.Parse(expense.Source);
-                if (parsedExpense == null)
-                    continue;
-
-                var currency = await currencyRepository.GetByName(parsedExpense.Currency, token)
-                    ?? throw new ApplicationException($"Currency '{parsedExpense.Currency}' was not found.");
-
-                expense.ParsedPlace = parsedExpense.Place;
-                expense.Currency = currency;
-
-                var rule = emailSub.Rules.FirstOrDefault(r => parsedExpense.Place.Contains(r.Place, StringComparison.OrdinalIgnoreCase));
+                var rule = emailSub.Rules.FirstOrDefault(r => expense.ParsedPlace.Contains(r.Place, StringComparison.OrdinalIgnoreCase));
                 if (rule != null)
                 {
                     expense.Category = rule.Category;

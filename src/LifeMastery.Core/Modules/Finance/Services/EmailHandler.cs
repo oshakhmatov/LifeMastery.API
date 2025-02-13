@@ -18,42 +18,54 @@ public class EmailHandler(
         if (emailSubs.Length == 0)
             return;
 
-        foreach (var emailSubscription in emailSubs)
+        foreach (var emailSub in emailSubs)
         {
-            var messages = await emailProvider.GetMessages(emailSubscription.Email, cancellationToken);
-            var contents = messages.SelectMany(m => m.AttachmentContents).ToArray();
+            var messages = await emailProvider.GetMessages(emailSub.Email, cancellationToken);
 
-            foreach (var content in contents)
+            foreach (var content in messages)
             {
-                var existingExpense = await expenseRepository.GetBySource(content, cancellationToken);
-                if (existingExpense != null)
-                    continue;
-
-                var parsedExpense = expenseParser.Parse(content);
-                if (parsedExpense == null)
-                    continue;
-
-                var currency = await currencyRepository.GetByName(parsedExpense.Currency, cancellationToken) 
-                    ?? throw new ApplicationException($"Currency '{parsedExpense.Currency}' was not found.");
-
-                var expense = new Expense(parsedExpense.Amount, currency)
+                if (content == null)
                 {
-                    Source = content,
-                    ParsedPlace = parsedExpense.Place,
-                    Date = parsedExpense.Date,
-                    EmailSubscription = emailSubscription
-                };
-
-                if (emailSubscription.Rules.Count != 0)
-                {
-                    var rule = emailSubscription.Rules.FirstOrDefault(r => r.Place == parsedExpense.Place);
-                    if (rule != null)
-                    {
-                        expense.Category = rule.Category;
-                    }
+                    continue;
                 }
 
-                expenseRepository.Put(expense);
+                var parsedExpenses = expenseParser.Parse(content);
+                if (parsedExpenses.Length == 0)
+                {
+                    continue;
+                }
+
+                foreach (var parsedExpense in parsedExpenses)
+                {
+                    var existingExpense = await expenseRepository.GetByTransactionId(parsedExpense.TransactionId, cancellationToken);
+                    if (existingExpense != null)
+                    {
+                        continue;
+                    }
+
+                    var currency = await currencyRepository.GetByName(parsedExpense.Currency, cancellationToken)
+                        ?? throw new ApplicationException($"Currency '{parsedExpense.Currency}' was not found.");
+
+                    var expense = new Expense(parsedExpense.Amount, currency)
+                    {
+                        Source = parsedExpense.Source,
+                        TransactionId = parsedExpense.TransactionId,
+                        ParsedPlace = parsedExpense.Place,
+                        Date = parsedExpense.Date,
+                        EmailSubscription = emailSub
+                    };
+
+                    if (emailSub.Rules.Count != 0)
+                    {
+                        var rule = emailSub.Rules.FirstOrDefault(r => expense.ParsedPlace.Contains(r.Place, StringComparison.OrdinalIgnoreCase));
+                        if (rule != null)
+                        {
+                            expense.Category = rule.Category;
+                        }
+                    }
+
+                    expenseRepository.Put(expense);
+                }
             }
         }
 
