@@ -22,6 +22,7 @@ public sealed class ExpenseCategoryRepository : RepositoryBase<ExpenseCategory>,
     {
         return await dbContext.ExpenseCategories
             .OrderBy(ec => ec.Name)
+            .Include(ec => ec.FamilyMember)
             .ToArrayAsync(token);
     }
 

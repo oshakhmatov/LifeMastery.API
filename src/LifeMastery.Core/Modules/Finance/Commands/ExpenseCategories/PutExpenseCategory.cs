@@ -10,11 +10,13 @@ public sealed class PutExpenseCategoryRequest
     public required string Name { get; init; }
     public required bool IsFood { get; init; }
     public string? Color { get; set; }
+    public int? FamilyMemberId { get; init; }
 }
 
 public sealed class PutExpenseCategory(
     IUnitOfWork unitOfWork,
-    IExpenseCategoryRepository expenseCategoryRepository) : CommandBase<PutExpenseCategoryRequest>(unitOfWork)
+    IExpenseCategoryRepository expenseCategoryRepository,
+    IFamilyMemberRepository familyMemberRepository) : CommandBase<PutExpenseCategoryRequest>(unitOfWork)
 {
     protected override async Task OnExecute(PutExpenseCategoryRequest request, CancellationToken token)
     {
@@ -22,6 +24,15 @@ public sealed class PutExpenseCategory(
         {
             var expenseCategory = await expenseCategoryRepository.Get(request.Id.Value, token)
                 ?? throw new Exception($"Expense category with ID '{request.Id}' was not found.");
+
+            if (request.FamilyMemberId is not null)
+            {
+                var familyMember = await familyMemberRepository.Get(request.FamilyMemberId.Value, token);
+                if (familyMember is null)
+                    throw new Exception($"Family member with ID '{request.FamilyMemberId}' was not found.");
+
+                expenseCategory.FamilyMember = familyMember;
+            }
 
             expenseCategory.Name = request.Name;
             expenseCategory.IsFood = request.IsFood;
@@ -33,10 +44,21 @@ public sealed class PutExpenseCategory(
             if (existingCategory is not null)
                 throw new Exception($"Expense category with name '{request.Name}' already exists.");
 
-            expenseCategoryRepository.Put(new ExpenseCategory(request.Name, request.IsFood)
+            var expenseCategory = new ExpenseCategory(request.Name, request.IsFood)
             {
                 Color = request.Color
-            });
+            };
+
+            if (request.FamilyMemberId is not null)
+            {
+                var familyMember = await familyMemberRepository.Get(request.FamilyMemberId.Value, token);
+                if (familyMember is null)
+                    throw new Exception($"Family member with ID '{request.FamilyMemberId}' was not found.");
+
+                expenseCategory.FamilyMember = familyMember;
+            }
+
+            expenseCategoryRepository.Put(expenseCategory);
         }
     }
 }

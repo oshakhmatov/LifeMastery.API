@@ -115,7 +115,7 @@ public sealed class GetFinanceData(
             .First();
 
         var contributionChart = BuildContributionChart(selectedFamilyBudgetRule.ContributionRatio, earnings);
-        var familyBudgetStats = BuildFamilyBudgetStats(earnings, expenses, selectedFamilyBudgetRule.ContributionRatio);
+        var familyBudgetStats = BuildFamilyBudgetStats(earnings, expenses, selectedFamilyBudgetRule.ContributionRatio, periodPayments);
 
         return new FinanceViewModel
         {
@@ -252,20 +252,31 @@ public sealed class GetFinanceData(
     public static FamilyMemberBudgetDto[] BuildFamilyBudgetStats(
         IEnumerable<Earning> earnings,
         IEnumerable<Expense> expenses,
-        ContributionRatio contributionRatio)
+        ContributionRatio contributionRatio,
+        Payment[] payments)
     {
+        if (earnings == null) throw new ArgumentNullException(nameof(earnings));
+        if (expenses == null) throw new ArgumentNullException(nameof(expenses));
+        if (payments == null) throw new ArgumentNullException(nameof(payments));
+
         var earningsByMember = earnings
             .GroupBy(e => e.FamilyMember)
             .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+
+        if (!earningsByMember.Any())
+            return Array.Empty<FamilyMemberBudgetDto>();
 
         var personalExpensesByMember = expenses
             .Where(e => e.Category?.FamilyMember != null)
             .GroupBy(e => e.Category!.FamilyMember!)
             .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
 
-        var sharedTotal = expenses
+        var expensesSharedTotal = expenses
             .Where(e => e.Category?.FamilyMember == null)
             .Sum(e => e.Amount);
+
+        var paymentsSharedTotal = payments.Sum(e => e.Amount);
+        var sharedTotal = expensesSharedTotal + paymentsSharedTotal;
 
         var contributionShares = CalculateContributionShares(contributionRatio, earnings);
 
@@ -297,6 +308,7 @@ public sealed class GetFinanceData(
     }
 
 
+
     public static Dictionary<FamilyMember, decimal> CalculateContributionShares(
         ContributionRatio contributionRatio,
         IEnumerable<Earning> earnings)
@@ -305,9 +317,15 @@ public sealed class GetFinanceData(
             .GroupBy(e => e.FamilyMember)
             .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
 
+        if (!earningsByMember.Any())
+            throw new InvalidOperationException("Cannot calculate contribution shares: no earnings found.");
+
         if (contributionRatio == ContributionRatio.Equal)
         {
             var count = earningsByMember.Count;
+            if (count == 0)
+                throw new InvalidOperationException("Cannot calculate equal shares: no family members found.");
+
             var percent = 100m / count;
 
             return earningsByMember.Keys
@@ -316,12 +334,17 @@ public sealed class GetFinanceData(
         else if (contributionRatio == ContributionRatio.Proportional)
         {
             var total = earningsByMember.Values.Sum();
-            var raw = earningsByMember
-                .ToDictionary(kvp => kvp.Key, kvp => (kvp.Value / total) * 100m);
+            if (total == 0)
+            {
+                return earningsByMember
+                    .ToDictionary(kvp => kvp.Key, _ => 0m);
+            }
 
-            return raw;
+            return earningsByMember
+                .ToDictionary(kvp => kvp.Key, kvp => (kvp.Value / total) * 100m);
         }
 
-        throw new InvalidOperationException("Unsupported contribution ratio");
+        throw new InvalidOperationException($"Unsupported contribution ratio: {contributionRatio}");
     }
+
 }
