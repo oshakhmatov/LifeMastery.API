@@ -19,5 +19,5 @@ public sealed class FinanceViewModel
     public required ChartDto? ExpenseChart { get; init; }
     public required FinanceInfoDto? Info { get; init; }
     public required FinanceStatisticsDto Statistics { get; init; }
-    //public required FamilyMemberBudgetDto[] FamilyMemberBudget { get; init; }
+    public required FamilyMemberBudgetDto[] FamilyMemberBudgetStats { get; init; }
 }

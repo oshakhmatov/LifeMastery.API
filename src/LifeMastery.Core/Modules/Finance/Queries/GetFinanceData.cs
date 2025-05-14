@@ -115,8 +115,7 @@ public sealed class GetFinanceData(
             .First();
 
         var contributionChart = BuildContributionChart(selectedFamilyBudgetRule.ContributionRatio, earnings);
-
-        
+        var familyBudgetStats = BuildFamilyBudgetStats(earnings, expenses, selectedFamilyBudgetRule.ContributionRatio);
 
         return new FinanceViewModel
         {
@@ -132,6 +131,7 @@ public sealed class GetFinanceData(
             Earnings = earnings.Select(e => e.ToDto()).ToArray(),
             FamilyBudgetRule = selectedFamilyBudgetRule.ToDto(),
             AvailableContributionRatios = [ "Поровну", "Пропорционально" ],
+            FamilyMemberBudgetStats = familyBudgetStats,
             ExpenseCategories = expenseCategories.Select(ExpenseCategoryDto.FromModel).ToArray(),
             RegularPayments = regularPayments
                 .Select(rp => rp.ToDto())
@@ -224,55 +224,104 @@ public sealed class GetFinanceData(
         return MathHelper.Round(overallTaxPercent);
     }
 
-    public static ChartDto? BuildContributionChart(ContributionRatio contributionRatio, IEnumerable<Earning> earnings)
+    public static ChartDto? BuildContributionChart(
+        ContributionRatio contributionRatio,
+        IEnumerable<Earning> earnings)
+    {
+        var shares = CalculateContributionShares(contributionRatio, earnings);
+
+        var labels = shares.Keys.Select(m => m.Name).ToArray();
+        var colors = labels
+            .Select((_, i) => PredefinedColors[i % PredefinedColors.Length])
+            .ToArray();
+
+        var rawValues = shares.Values.ToArray();
+        var floored = rawValues.Select(x => (long)Math.Floor(x)).ToArray();
+        var diff = 100L - floored.Sum();
+        for (int i = 0; i < diff; i++)
+            floored[i % floored.Length]++;
+
+        return new ChartDto
+        {
+            Labels = labels,
+            Values = floored,
+            Colors = colors
+        };
+    }
+
+    public static FamilyMemberBudgetDto[] BuildFamilyBudgetStats(
+        IEnumerable<Earning> earnings,
+        IEnumerable<Expense> expenses,
+        ContributionRatio contributionRatio)
     {
         var earningsByMember = earnings
             .GroupBy(e => e.FamilyMember)
             .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
 
-        var labels = earningsByMember.Keys.Select(m => m.Name).ToArray();
-       
-        var colors = labels
-            .Select((_, i) => PredefinedColors[i % PredefinedColors.Length])
-            .ToArray();
+        var personalExpensesByMember = expenses
+            .Where(e => e.Category?.FamilyMember != null)
+            .GroupBy(e => e.Category!.FamilyMember!)
+            .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
 
-        long[] values;
+        var sharedTotal = expenses
+            .Where(e => e.Category?.FamilyMember == null)
+            .Sum(e => e.Amount);
+
+        var contributionShares = CalculateContributionShares(contributionRatio, earnings);
+
+        var sharedByMember = contributionShares
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => Math.Round(sharedTotal * (kvp.Value / 100m), 2)
+            );
+
+        var result = new List<FamilyMemberBudgetDto>();
+
+        foreach (var member in earningsByMember.Keys)
+        {
+            var income = earningsByMember[member];
+            var personal = personalExpensesByMember.GetValueOrDefault(member, 0m);
+            var shared = sharedByMember.GetValueOrDefault(member, 0m);
+            var savings = income - personal - shared;
+
+            result.Add(new FamilyMemberBudgetDto
+            {
+                FamilyMemberName = member.Name,
+                NetSavings = savings,
+                PersonalExpenses = personal,
+                SharedContribution = shared
+            });
+        }
+
+        return result.ToArray();
+    }
+
+
+    public static Dictionary<FamilyMember, decimal> CalculateContributionShares(
+        ContributionRatio contributionRatio,
+        IEnumerable<Earning> earnings)
+    {
+        var earningsByMember = earnings
+            .GroupBy(e => e.FamilyMember)
+            .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
 
         if (contributionRatio == ContributionRatio.Equal)
         {
-            var equalValue = 100L / labels.Length;
-            values = Enumerable.Repeat(equalValue, labels.Length).ToArray();
+            var count = earningsByMember.Count;
+            var percent = 100m / count;
 
-            var remainder = 100L - values.Sum();
-            if (remainder != 0 && values.Length > 0)
-                values[0] += remainder;
+            return earningsByMember.Keys
+                .ToDictionary(m => m, _ => percent);
         }
         else if (contributionRatio == ContributionRatio.Proportional)
         {
             var total = earningsByMember.Values.Sum();
-            var rawValues = earningsByMember.Values
-                .Select(amount => (amount / total) * 100m)
-                .ToArray();
+            var raw = earningsByMember
+                .ToDictionary(kvp => kvp.Key, kvp => (kvp.Value / total) * 100m);
 
-            values = rawValues
-                .Select(v => (long)Math.Floor(v))
-                .ToArray();
-
-            var diff = 100L - values.Sum();
-            for (int i = 0; i < diff; i++)
-                values[i % values.Length]++;
-        }
-        else
-        {
-            return null;
+            return raw;
         }
 
-        return new ChartDto
-        {
-            Labels = labels,
-            Values = values,
-            Colors = colors
-        };
+        throw new InvalidOperationException("Unsupported contribution ratio");
     }
-
 }
