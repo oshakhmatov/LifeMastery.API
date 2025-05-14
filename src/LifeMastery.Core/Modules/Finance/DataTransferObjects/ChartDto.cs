@@ -1,6 +1,6 @@
 ﻿namespace LifeMastery.Core.Modules.Finance.DataTransferObjects;
 
-public class ExpenseChartDto
+public class ChartDto
 {
     public required string[] Labels { get; init; }
     public required long[] Values { get; init; }

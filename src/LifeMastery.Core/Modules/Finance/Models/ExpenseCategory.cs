@@ -7,6 +7,7 @@ public class ExpenseCategory
     public bool IsFood { get; set; }
     public string? Color { get; set; }
     public List<Expense>? Expenses { get; }
+    public FamilyMember? FamilyMember { get; set; }
 
     public ExpenseCategory(string name, bool isFood)
     {

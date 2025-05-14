@@ -1,5 +1,6 @@
 ﻿using LifeMastery.Core.Common;
 using LifeMastery.Core.Modules.Finance.DataTransferObjects;
+using LifeMastery.Core.Modules.Finance.Enums;
 using LifeMastery.Core.Modules.Finance.Models;
 using LifeMastery.Core.Modules.Finance.Repositories;
 
@@ -18,21 +19,30 @@ public sealed class GetFinanceData(
     IRegularPaymentRepository regularPaymentRepository,
     IEmailSubscriptionRepository emailSubscriptionRepository,
     IFinanceInfoRepository financeInfoRepository,
-    ICurrencyRepository currencyRepository)
+    ICurrencyRepository currencyRepository,
+    IFamilyMemberRepository familyMemberRepository,
+    IEarningRepository earningRepository,
+    IFamilyBudgetRuleRepository familyBudgetRuleRepository,
+    IUnitOfWork unitOfWork)
 {
-    public async Task<FinanceViewModel> Execute(GetFinanceDataRequest request, CancellationToken token)
+    private static readonly string[] PredefinedColors = ["#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f"];
+
+    public async Task<FinanceViewModel> Execute(GetFinanceDataRequest request, CancellationToken cancellationToken)
     {
         var today = DateOnly.FromDateTime(DateTime.Now);
         var year = request.Year ?? today.Year;
         var month = request.Month ?? today.Month;
 
-        var expenseMonths = await expenseRepository.GetExpenseMonths(token);
-        var expenses = await expenseRepository.List(year, month, token);
-        var expenseCategories = await expenseCategoryRepository.List(token);
-        var currencies = await currencyRepository.List(token);
-        var regularPayments = await regularPaymentRepository.List(token);
-        var emailSubscriptions = await emailSubscriptionRepository.List(token);
-        var info = await financeInfoRepository.Get(token);
+        var expenseMonths = await expenseRepository.GetExpenseMonths(cancellationToken);
+        var expenses = await expenseRepository.List(year, month, cancellationToken);
+        var expenseCategories = await expenseCategoryRepository.List(cancellationToken);
+        var currencies = await currencyRepository.List(cancellationToken);
+        var regularPayments = await regularPaymentRepository.List(cancellationToken);
+        var emailSubscriptions = await emailSubscriptionRepository.List(cancellationToken);
+        var info = await financeInfoRepository.Get(cancellationToken);
+        var familyMembers = await familyMemberRepository.List(cancellationToken);
+        var earnings = await earningRepository.List(year, month, cancellationToken);
+        var familyBudgetRules = await familyBudgetRuleRepository.List(year, month, cancellationToken);
 
         //if (request.CurrencyId != null) { 
         //}
@@ -61,6 +71,53 @@ public sealed class GetFinanceData(
             .GroupBy(e => e.Category!.Name)
             .OrderByDescending(g => g.Select(e => e.Amount).Sum());
 
+        var selectedFamilyBudgetRule = familyBudgetRules
+            .Where(fbr => fbr.PeriodYear == year && fbr.PeriodMonth == month)
+            .FirstOrDefault();
+
+        if (selectedFamilyBudgetRule == null)
+        {
+            var latestFamilyBudgetRule = await familyBudgetRuleRepository.GetLatest(cancellationToken);
+
+            selectedFamilyBudgetRule = new FamilyBudgetRule(
+                latestFamilyBudgetRule?.ContributionRatio ?? ContributionRatio.Proportional,
+                periodYear: year,
+                periodMonth: month);
+
+            familyBudgetRuleRepository.Put(selectedFamilyBudgetRule);
+        }
+
+        foreach (var familyMember in familyMembers)
+        {
+            var earning = earnings
+                .Where(e => e.FamilyMember == familyMember)
+                .FirstOrDefault();
+
+            if (earning == null)
+            {
+                var latestEarning = await earningRepository.GetLatestByFamilyMember(familyMember, cancellationToken);
+
+                earning = new Earning(
+                    amount: latestEarning?.Amount ?? 0, 
+                    periodYear: year,
+                    periodMonth: month,
+                    familyMember: familyMember);
+
+                earningRepository.Put(earning);
+            }
+        }
+
+        await unitOfWork.Commit(cancellationToken);
+        earnings = await earningRepository.List(year, month, cancellationToken);
+        familyBudgetRules = await familyBudgetRuleRepository.List(year, month, cancellationToken);
+        selectedFamilyBudgetRule = familyBudgetRules
+            .Where(fbr => fbr.PeriodYear == year && fbr.PeriodMonth == month)
+            .First();
+
+        var contributionChart = BuildContributionChart(selectedFamilyBudgetRule.ContributionRatio, earnings);
+
+        
+
         return new FinanceViewModel
         {
             MonthTotal = MathHelper.Round(expenses.Select(e => e.Amount).Sum()),
@@ -71,6 +128,10 @@ public sealed class GetFinanceData(
 
             }).ToArray(),
             Currencies = currencies.Select(CurrencyDto.FromModel).ToArray(),
+            FamilyMembers = familyMembers.Select(fm => fm.ToDto()).ToArray(),
+            Earnings = earnings.Select(e => e.ToDto()).ToArray(),
+            FamilyBudgetRule = selectedFamilyBudgetRule.ToDto(),
+            AvailableContributionRatios = [ "Поровну", "Пропорционально" ],
             ExpenseCategories = expenseCategories.Select(ExpenseCategoryDto.FromModel).ToArray(),
             RegularPayments = regularPayments
                 .Select(rp => rp.ToDto())
@@ -78,12 +139,13 @@ public sealed class GetFinanceData(
                 .ThenBy(rp => rp.Name)
                 .ToArray(),
             EmailSubscriptions = emailSubscriptions.Select(es => es.ToDto()).ToArray(),
-            ExpenseChart = new ExpenseChartDto
+            ExpenseChart = new ChartDto
             {
                 Labels = categorizedExpenses.Select(e => e.Key).ToArray(),
                 Values = categorizedExpenses.Select(e => (long) e.Select(e => e.Amount).Sum()).ToArray(),
                 Colors = categorizedExpenses.Select(e => e.Select(e => e.Category!).First().Color).ToArray()
             },
+            ContributionChart = contributionChart,
             CurrentCurrency = 0,
             CurrentExpenseMonth = Array.IndexOf(expenseMonths, expenseMonths.FirstOrDefault(e => e.Year == year && e.Month == month)),
             ExpenseMonths = expenseMonths.Select(e => new ExpenseMonthDto
@@ -161,4 +223,56 @@ public sealed class GetFinanceData(
 
         return MathHelper.Round(overallTaxPercent);
     }
+
+    public static ChartDto? BuildContributionChart(ContributionRatio contributionRatio, IEnumerable<Earning> earnings)
+    {
+        var earningsByMember = earnings
+            .GroupBy(e => e.FamilyMember)
+            .ToDictionary(g => g.Key, g => g.Sum(e => e.Amount));
+
+        var labels = earningsByMember.Keys.Select(m => m.Name).ToArray();
+       
+        var colors = labels
+            .Select((_, i) => PredefinedColors[i % PredefinedColors.Length])
+            .ToArray();
+
+        long[] values;
+
+        if (contributionRatio == ContributionRatio.Equal)
+        {
+            var equalValue = 100L / labels.Length;
+            values = Enumerable.Repeat(equalValue, labels.Length).ToArray();
+
+            var remainder = 100L - values.Sum();
+            if (remainder != 0 && values.Length > 0)
+                values[0] += remainder;
+        }
+        else if (contributionRatio == ContributionRatio.Proportional)
+        {
+            var total = earningsByMember.Values.Sum();
+            var rawValues = earningsByMember.Values
+                .Select(amount => (amount / total) * 100m)
+                .ToArray();
+
+            values = rawValues
+                .Select(v => (long)Math.Floor(v))
+                .ToArray();
+
+            var diff = 100L - values.Sum();
+            for (int i = 0; i < diff; i++)
+                values[i % values.Length]++;
+        }
+        else
+        {
+            return null;
+        }
+
+        return new ChartDto
+        {
+            Labels = labels,
+            Values = values,
+            Colors = colors
+        };
+    }
+
 }

@@ -1,8 +1,10 @@
 ﻿using LifeMastery.Core.Modules.Finance.Commands.Currencies;
+using LifeMastery.Core.Modules.Finance.Commands.Earnings;
 using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCategories;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCreationRules;
 using LifeMastery.Core.Modules.Finance.Commands.Expenses;
+using LifeMastery.Core.Modules.Finance.Commands.FamilyMembers;
 using LifeMastery.Core.Modules.Finance.Commands.Info;
 using LifeMastery.Core.Modules.Finance.Commands.Payments;
 using LifeMastery.Core.Modules.Finance.Commands.RegularPayments;
@@ -17,11 +19,11 @@ public class FinanceController : ApiControllerBase
 {
     [HttpGet]
     public async Task<FinanceViewModel> GetFinanceData(
-        [FromServices] GetFinanceData getExpenses,
+        [FromServices] GetFinanceData getFinanceData,
         [FromQuery] GetFinanceDataRequest request,
         CancellationToken token)
     {
-        return await getExpenses.Execute(request, token);
+        return await getFinanceData.Execute(request, token);
     }
 
     [HttpPut("expenses")]
@@ -173,5 +175,41 @@ public class FinanceController : ApiControllerBase
         CancellationToken token)
     {
         await removeCurrency.Execute(id, token);
+    }
+
+    [HttpPut("family-members")]
+    public async Task PutFamilyMember(
+        [FromServices] PutFamilyMember putFamilyMember,
+        [FromBody] PutFamilyMemberRequest command,
+        CancellationToken token)
+    {
+        await putFamilyMember.Execute(command, token);
+    }
+
+    [HttpDelete("family-members/{id}")]
+    public async Task RemoveFamilyMember(
+        [FromServices] RemoveFamilyMember removeFamilyMember,
+        int id,
+        CancellationToken token)
+    {
+        await removeFamilyMember.Execute(id, token);
+    }
+
+    [HttpPut("earnings")]
+    public async Task PutEarning(
+        [FromServices] PutEarning putEarning,
+        [FromBody] PutEarningRequest command,
+        CancellationToken token)
+    {
+        await putEarning.Execute(command, token);
+    }
+
+    [HttpPut("family-budget-rules")]
+    public async Task PutFamilyBudgetRule(
+        [FromServices] PutFamilyBudgetRule putFamilyBudget,
+        [FromBody] PutFamilyBudgetRuleRequest command,
+        CancellationToken token)
+    {
+        await putFamilyBudget.Execute(command, token);
     }
 }

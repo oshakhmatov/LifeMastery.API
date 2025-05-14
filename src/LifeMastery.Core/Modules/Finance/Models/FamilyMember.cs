@@ -1,14 +1,14 @@
 ﻿namespace LifeMastery.Core.Modules.Finance.Models;
 
-public class Currency
+public class FamilyMember
 {
     public int Id { get; set; }
     public string Name { get; set; }
 
-    public Currency(string name)
+    public FamilyMember(string name)
     {
         Name = name;
     }
 
-    protected Currency() { }
+    protected FamilyMember() { }
 }

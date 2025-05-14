@@ -28,10 +28,13 @@ public sealed class AppDbContext : DbContext, IUnitOfWork
     public DbSet<ExpenseCreationRule> ExpenseCreationRules { get; set; }
     public DbSet<FinanceInfo> FinanceInfo { get; set; }
     public DbSet<Currency> Currencies { get; set; }
+    public DbSet<FamilyMember> FamilyMembers { get; set; }
+    public DbSet<Earning> Earnings { get; set; }
+    public DbSet<FamilyBudgetRule> FamilyBudgetRules { get; set; }
 
-    public async Task Commit()
+    public async Task Commit(CancellationToken cancellationToken = default)
     {
-        await SaveChangesAsync();
+        await SaveChangesAsync(cancellationToken);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

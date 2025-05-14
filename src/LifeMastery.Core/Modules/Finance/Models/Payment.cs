@@ -15,4 +15,6 @@ public sealed class Payment
         PeriodYear = periodYear;
         PeriodMonth = periodMonth;
     }
+
+    protected Payment() { }
 }
