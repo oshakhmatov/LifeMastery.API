@@ -1,5 +1,4 @@
-﻿using LifeMastery.Core.Modules.Finance.DataTransferObjects;
-using LifeMastery.Core.Modules.Finance.Services.Abstractions;
+﻿using LifeMastery.Core.Modules.Finance.Services.Abstractions;
 using LifeMastery.Infrastructure.Options;
 using MailKit;
 using MailKit.Net.Imap;
@@ -22,15 +21,15 @@ public class EmailProvider(IOptionsSnapshot<EmailProviderOptions> optionsSnapsho
         await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect, cancellationToken: cancellationToken);
         await client.AuthenticateAsync(options.UserName, options.Password, cancellationToken);
 
-        var folder = await client.GetFolderAsync("Reiffeisen", cancellationToken);
+        var inbox = await client.GetFolderAsync("INBOX", cancellationToken);
+        await inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
 
-        await folder.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
+        var query = SearchQuery.SubjectContains("Expenses");
+        var uids = await inbox.SearchAsync(query, cancellationToken);
 
-        var uids = await folder.SearchAsync(SearchQuery.All, cancellationToken);
+        var emailMessages = ParseMessages(inbox, uids).ToArray();
 
-        var emailMessages = ParseMessages(folder, uids).ToArray();
-
-        await client.DisconnectAsync(quit: true, cancellationToken: cancellationToken);
+        await client.DisconnectAsync(true, cancellationToken);
 
         return emailMessages;
     }
@@ -42,17 +41,18 @@ public class EmailProvider(IOptionsSnapshot<EmailProviderOptions> optionsSnapsho
         await client.ConnectAsync(options.ImapHost, options: SecureSocketOptions.SslOnConnect, cancellationToken: cancellationToken);
         await client.AuthenticateAsync(options.UserName, options.Password, cancellationToken);
 
-        var folder = await client.GetFolderAsync("Reiffeisen", cancellationToken);
-        await folder.OpenAsync(FolderAccess.ReadWrite, cancellationToken);
+        var inbox = await client.GetFolderAsync("INBOX", cancellationToken);
+        await inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
 
-        var uids = await folder.SearchAsync(SearchQuery.All, cancellationToken);
+        var query = SearchQuery.SubjectContains("Expenses");
+        var uids = await inbox.SearchAsync(query, cancellationToken);
 
         foreach (var uid in uids)
         {
-            folder.AddFlags(uid, MessageFlags.Deleted, silent: true, cancellationToken: cancellationToken);
+            inbox.AddFlags(uid, MessageFlags.Deleted, silent: true, cancellationToken: cancellationToken);
         }
 
-        await folder.ExpungeAsync(cancellationToken);
+        await inbox.ExpungeAsync(cancellationToken);
 
         await client.DisconnectAsync(quit: true, cancellationToken: cancellationToken);
     }

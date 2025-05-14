@@ -43,9 +43,9 @@ public static class RegularPaymentProjection
 
     private static decimal? GetApproximateAmount(RegularPayment regularPayment)
     {
-        if (regularPayment.Amount != null)
+        if (regularPayment.Amount != null || regularPayment.Payments.Count == 0)
         {
-            return null;
+            return 0;
         }
 
         return MathHelper.Round(regularPayment.Payments.Average(p => p.Amount));

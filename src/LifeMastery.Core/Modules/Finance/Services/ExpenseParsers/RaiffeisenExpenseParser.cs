@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.DataTransferObjects;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.DataTransferObjects;
 using LifeMastery.Core.Modules.Finance.Services.Abstractions;
 using System.Globalization;
 using System.Text.RegularExpressions;
@@ -6,7 +7,7 @@ using System.Xml.Linq;
 
 namespace LifeMastery.Core.Modules.Finance.Services;
 
-public sealed partial class RaiffeisenExpenseParser : IExpenseParser
+public sealed partial class RaiffeisenExpenseParser(IAppCultureProvider cultureProvider) : IExpenseParser
 {
     public ParsedExpenseDto[] Parse(string content)
     {
@@ -18,9 +19,13 @@ public sealed partial class RaiffeisenExpenseParser : IExpenseParser
                 var dateStr = (string?)stavka.Attribute("DatumValute") ?? "";
                 var place = CleanString((string?)stavka.Attribute("NalogKorisnik") ?? "");
                 var opis = (string?)stavka.Attribute("Opis") ?? "";
+                var paymentCode = (string?)stavka.Attribute("SifraPlacanja") ?? null;
                 var transactionId = (string?)stavka.Attribute("Referenca") ?? "";
 
-                if (string.IsNullOrEmpty(transactionId) || place == "RAIFFEISEN BANK NOVI SAD RS")
+                if (string.IsNullOrEmpty(transactionId)
+                    || place.Contains("RAIFFEISEN", StringComparison.CurrentCultureIgnoreCase)
+                    || paymentCode == "286"
+                    || place.Contains("SBB DOO", StringComparison.CurrentCultureIgnoreCase))
                     return null;
 
                 var amountMatch = AmountRegex().Match(opis);
@@ -30,13 +35,13 @@ public sealed partial class RaiffeisenExpenseParser : IExpenseParser
                 }
 
                 var amountString = NormalizeAmount(amountMatch.Groups[1].Value);
-                if (!decimal.TryParse(amountString, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var amount))
+                if (!decimal.TryParse(amountString, NumberStyles.AllowDecimalPoint, cultureProvider.CurrentCulture, out var amount))
                     return null;
 
                 var currencyMatch = CurrencyRegex().Match(opis);
                 var currency = currencyMatch.Success ? currencyMatch.Groups[1].Value : "RSD";
 
-                var date = DateOnly.ParseExact(dateStr, "dd.MM.yyyy", CultureInfo.InvariantCulture);
+                var date = DateOnly.ParseExact(dateStr, "dd.MM.yyyy", cultureProvider.CurrentCulture);
 
                 return new ParsedExpenseDto
                 {
@@ -54,7 +59,8 @@ public sealed partial class RaiffeisenExpenseParser : IExpenseParser
 
     private static string NormalizeAmount(string rawAmount)
     {
-        return Regex.Replace(rawAmount, @"(?<=\d)\.(?=\d{3}(?:[,.]\d{2})?$)", "").Replace(",", ".");
+        var cleaned = ThousandsSeparatorRegex().Replace(rawAmount, "");
+        return DecimalSeparatorRegex().Replace(cleaned, ",");
     }
 
     private static string CleanString(string input) => input.TrimEnd('\r');
@@ -64,4 +70,10 @@ public sealed partial class RaiffeisenExpenseParser : IExpenseParser
 
     [GeneratedRegex(@"Iznos transakcije:\s*[\d,.]+\s*u\s*valuti\s*([A-Z]+)")]
     private static partial Regex CurrencyRegex();
+
+    [GeneratedRegex(@"(?<=\d)[.,](?=\d{3}([.,]\d{2})?$)")]
+    private static partial Regex ThousandsSeparatorRegex();
+
+    [GeneratedRegex(@"([.,])(?=\d{2}$)")]
+    private static partial Regex DecimalSeparatorRegex();
 }

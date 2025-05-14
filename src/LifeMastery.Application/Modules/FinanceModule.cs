@@ -1,4 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.Commands.Currencies;
+﻿using LifeMastery.Core.Common;
+using LifeMastery.Core.Modules.Finance.Commands.Currencies;
 using LifeMastery.Core.Modules.Finance.Commands.EmailSubscriptions;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCategories;
 using LifeMastery.Core.Modules.Finance.Commands.ExpenseCreationRules;
@@ -21,6 +22,7 @@ public static class FinanceModule
     public static IServiceCollection AddFinanceModule(this IServiceCollection services)
     {
         return services
+            .AddSingleton<IAppCultureProvider, RsCultureProvider>()
             .AddTransient<EmailHandler>()
             .AddTransient<IExpenseParser, RaiffeisenExpenseParser>()
             .AddTransient<IEmailProvider, EmailProvider>()
