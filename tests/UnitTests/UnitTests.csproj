@@ -22,8 +22,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\LifeMastery.Application\LifeMastery.Application.csproj" />
-    <ProjectReference Include="..\..\src\LifeMastery.Core\LifeMastery.Core.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 </Project>

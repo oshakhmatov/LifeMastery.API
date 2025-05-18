@@ -1,5 +1,5 @@
-﻿using LifeMastery.Core.Modules.Finance.DataTransferObjects;
-using LifeMastery.Core.Modules.Finance.Services;
+﻿using LifeMastery.Finance.DataTransferObjects;
+using LifeMastery.Finance.Services;
 using LifeMastery.Infrastructure.Services;
 
 namespace UnitTests.Tests.Finance.Services.ExpenseParsers;

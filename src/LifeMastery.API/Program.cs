@@ -1,4 +1,6 @@
-using LifeMastery.Application;
+using LifeMastery.API;
+using LifeMastery.API.Middleware;
+using LifeMastery.Finance;
 using LifeMastery.Infrastructure.Services.Abstractions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +17,8 @@ using var scope = app.Services.CreateScope();
 using var migrationService = scope.ServiceProvider.GetRequiredService<IMigrationService>();
 await migrationService.Migrate();
 
+app.UseGlobalExceptionHandling();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -28,6 +32,7 @@ app.UseCors(x =>
     x.WithOrigins("http://localhost:81", "http://localhost:4200");
 });
 app.UseAuthorization();
+app.MapCommands();
 app.MapControllers();
 
 var appUrl = app.Environment.IsDevelopment() ? "http://*:82" : "http://*:80";

@@ -25,7 +25,7 @@ namespace LifeMastery.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Currency", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.Currency", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -42,7 +42,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("Currencies");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.EmailSubscription", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -62,7 +62,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("EmailSubscriptions");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Expense", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.Expense", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -107,7 +107,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCategory", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.ExpenseCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -130,7 +130,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("ExpenseCategories");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCreationRule", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.ExpenseCreationRule", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -157,7 +157,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("ExpenseCreationRules");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.FinanceInfo", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.FinanceInfo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -173,7 +173,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("FinanceInfo");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Payment", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -203,7 +203,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.RegularPayment", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.RegularPayment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,7 +241,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("RegularPayments");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Jobs.Models.Job", b =>
+            modelBuilder.Entity("LifeMastery.Agenda.Models.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -273,7 +273,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.WeightControl.Models.HealthInfo", b =>
+            modelBuilder.Entity("LifeMastery.Health.Models.HealthInfo", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -295,7 +295,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("HealthInfos");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.WeightControl.Models.WeightRecord", b =>
+            modelBuilder.Entity("LifeMastery.Health.Models.WeightRecord", b =>
                 {
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
@@ -308,17 +308,17 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("WeightRecords");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Expense", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.Expense", b =>
                 {
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.ExpenseCategory", "Category")
+                    b.HasOne("LifeMastery.Finance.Models.ExpenseCategory", "Category")
                         .WithMany("Expenses")
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.Currency", "Currency")
+                    b.HasOne("LifeMastery.Finance.Models.Currency", "Currency")
                         .WithMany()
                         .HasForeignKey("CurrencyId");
 
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", "EmailSubscription")
+                    b.HasOne("LifeMastery.Finance.Models.EmailSubscription", "EmailSubscription")
                         .WithMany("Expenses")
                         .HasForeignKey("EmailSubscriptionId");
 
@@ -329,41 +329,41 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.Navigation("EmailSubscription");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCreationRule", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.ExpenseCreationRule", b =>
                 {
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.ExpenseCategory", "Category")
+                    b.HasOne("LifeMastery.Finance.Models.ExpenseCategory", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", null)
+                    b.HasOne("LifeMastery.Finance.Models.EmailSubscription", null)
                         .WithMany("Rules")
                         .HasForeignKey("EmailSubscriptionId");
 
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Payment", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.Payment", b =>
                 {
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.RegularPayment", null)
+                    b.HasOne("LifeMastery.Finance.Models.RegularPayment", null)
                         .WithMany("Payments")
                         .HasForeignKey("RegularPaymentId");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.EmailSubscription", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.EmailSubscription", b =>
                 {
                     b.Navigation("Expenses");
 
                     b.Navigation("Rules");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCategory", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.ExpenseCategory", b =>
                 {
                     b.Navigation("Expenses");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.RegularPayment", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.RegularPayment", b =>
                 {
                     b.Navigation("Payments");
                 });

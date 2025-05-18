@@ -1,4 +1,4 @@
-﻿using LifeMastery.Core.Modules.WeightControl.Models;
+﻿using LifeMastery.Health.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

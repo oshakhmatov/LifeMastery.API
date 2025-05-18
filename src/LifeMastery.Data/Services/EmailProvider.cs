@@ -1,4 +1,4 @@
-﻿using LifeMastery.Core.Modules.Finance.Services.Abstractions;
+﻿using LifeMastery.Finance.Services.Abstractions;
 using LifeMastery.Infrastructure.Options;
 using MailKit;
 using MailKit.Net.Imap;

@@ -5,13 +5,20 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MailKit" Version="4.6.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.6" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.6" />
+    <PackageReference Include="MailKit" Version="4.12.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.16" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.16">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LifeMastery.Core\LifeMastery.Core.csproj" />
+    <ProjectReference Include="..\LifeMastery.Agenda\LifeMastery.Agenda.csproj" />
+    <ProjectReference Include="..\LifeMastery.Domain.Abstractions\LifeMastery.Domain.Abstractions.csproj" />
+    <ProjectReference Include="..\LifeMastery.Finance\LifeMastery.Finance.csproj" />
+    <ProjectReference Include="..\LifeMastery.Health\LifeMastery.Health.csproj" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿using LifeMastery.Core.Modules.WeightControl.Services;
+﻿using LifeMastery.Health.Services;
 
 namespace UnitTests.Modules.WeightControl.Services.BodyMassIndexServiceTests;
 

@@ -1,4 +1,4 @@
-﻿using LifeMastery.Core.Modules.Finance.Models;
+﻿using LifeMastery.Finance.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

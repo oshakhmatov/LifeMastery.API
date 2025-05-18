@@ -25,7 +25,7 @@ namespace LifeMastery.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Expense", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.Expense", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +49,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("Expenses");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCategory", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.ExpenseCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +66,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("ExpenseCategories");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Jobs.Models.Job", b =>
+            modelBuilder.Entity("LifeMastery.Agenda.Models.Job", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -98,7 +98,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("Jobs");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.WeightControl.Models.HealthInfo", b =>
+            modelBuilder.Entity("LifeMastery.Health.Models.HealthInfo", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
@@ -120,7 +120,7 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("HealthInfos");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.WeightControl.Models.WeightRecord", b =>
+            modelBuilder.Entity("LifeMastery.Health.Models.WeightRecord", b =>
                 {
                     b.Property<DateOnly>("Date")
                         .HasColumnType("date");
@@ -133,16 +133,16 @@ namespace LifeMastery.Infrastructure.Migrations
                     b.ToTable("WeightRecords");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.Expense", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.Expense", b =>
                 {
-                    b.HasOne("LifeMastery.Core.Modules.Finance.Models.ExpenseCategory", "Category")
+                    b.HasOne("LifeMastery.Finance.Models.ExpenseCategory", "Category")
                         .WithMany("Expenses")
                         .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("LifeMastery.Core.Modules.Finance.Models.ExpenseCategory", b =>
+            modelBuilder.Entity("LifeMastery.Finance.Models.ExpenseCategory", b =>
                 {
                     b.Navigation("Expenses");
                 });

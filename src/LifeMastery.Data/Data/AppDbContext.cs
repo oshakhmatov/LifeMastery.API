@@ -1,7 +1,7 @@
-﻿using LifeMastery.Core;
-using LifeMastery.Core.Modules.Finance.Models;
-using LifeMastery.Core.Modules.Jobs.Models;
-using LifeMastery.Core.Modules.WeightControl.Models;
+﻿using LifeMastery.Agenda.Models;
+using LifeMastery.Health.Models;
+using LifeMastery.Domain.Abstractions;
+using LifeMastery.Finance.Models;
 using LifeMastery.Infrastructure.Options;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -42,6 +42,7 @@ public sealed class AppDbContext : DbContext, IUnitOfWork
         if (!optionsBuilder.IsConfigured)
         {
             optionsBuilder.UseNpgsql(optionsSnapshot.Value.ConnectionString);
+            optionsBuilder.UseLazyLoadingProxies();
         }
     }
 
