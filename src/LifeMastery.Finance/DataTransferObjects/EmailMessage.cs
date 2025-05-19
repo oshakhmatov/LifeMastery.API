@@ -1,7 +1,5 @@
 ﻿namespace LifeMastery.Finance.DataTransferObjects;
 
-public class EmailMessage
-{
-    public required string Subject { get; init; }
-    public required string Content { get; init; }
-}
+public record EmailMessage(
+    string Subject,
+    string Content);

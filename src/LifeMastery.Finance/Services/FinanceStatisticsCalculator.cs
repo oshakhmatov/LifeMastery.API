@@ -8,12 +8,11 @@ public class FinanceStatisticsCalculator
 {
     public FinanceStatisticsDto Calculate(decimal? income, Expense[] expenses, Expense[] food, Payment[] taxes)
     {
-        return new FinanceStatisticsDto
-        {
-            RemainingAmountPercent = CalcRemaining(income, expenses, taxes),
-            FoodSpendingPercent = CalcPercent(income, food.Select(f => f.Amount)),
-            OverallTaxPercent = CalcPercent(income, taxes.Select(t => t.Amount))
-        };
+        return new FinanceStatisticsDto(
+            RemainingAmountPercent: CalcRemaining(income, expenses, taxes),
+            FoodSpendingPercent: CalcPercent(income, food.Select(f => f.Amount)),
+            OverallTaxPercent: CalcPercent(income, taxes.Select(t => t.Amount)));
+        
     }
 
     private static decimal? CalcRemaining(decimal? income, Expense[] expenses, Payment[] payments)

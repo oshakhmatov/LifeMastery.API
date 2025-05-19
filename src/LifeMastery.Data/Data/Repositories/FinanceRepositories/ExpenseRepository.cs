@@ -25,12 +25,11 @@ public sealed class ExpenseRepository(AppDbContext db) : Repository<Expense>(db)
             .Distinct()
             .OrderByDescending(e => e.Year)
             .ThenByDescending(e => e.Month)
-            .Select(e => new ExpenseMonthDto
-            {
-                Year = e.Year,
-                Month = e.Month,
-                Name = $"{DateHelper.GetMonthName(e.Month)} {e.Year}"
-            })
+            .Select(e => new ExpenseMonthDto(
+                e.Month,
+                e.Year,
+                $"{DateHelper.GetMonthName(e.Month)} {e.Year}")
+            )
             .ToArrayAsync(token);
     }
 }

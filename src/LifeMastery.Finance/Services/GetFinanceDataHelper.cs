@@ -6,8 +6,7 @@ namespace LifeMastery.Finance.Services;
 
 public static class GetFinanceDataHelper
 {
-    private static readonly string[] PredefinedColors =
-        ["#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f"];
+    private static readonly string[] PredefinedColors = ["#4e79a7", "#f28e2c", "#e15759", "#76b7b2", "#59a14f"];
 
     public static ChartDto BuildContributionChart(
         ContributionRatio ratio,
@@ -24,12 +23,10 @@ public static class GetFinanceDataHelper
         for (int i = 0; i < diff; i++)
             floored[i % floored.Length]++;
 
-        return new ChartDto
-        {
-            Labels = labels,
-            Values = floored,
-            Colors = colors
-        };
+        return new ChartDto(
+            Labels: labels,
+            Values: floored,
+            Colors: colors);
     }
 
     public static FamilyMemberBudgetDto[] BuildFamilyBudgetStats(
@@ -65,13 +62,11 @@ public static class GetFinanceDataHelper
             var income = earningsByMember[member];
             var personal = personalExpensesByMember.GetValueOrDefault(member, 0);
             var shared = sharedByMember.GetValueOrDefault(member, 0);
-            return new FamilyMemberBudgetDto
-            {
-                FamilyMemberName = member.Name,
-                NetSavings = income - personal - shared,
-                PersonalExpenses = personal,
-                SharedContribution = shared
-            };
+            return new FamilyMemberBudgetDto(
+                FamilyMemberName: member.Name,
+                NetSavings: income - personal - shared,
+                PersonalExpenses: personal,
+                SharedContribution: shared);
         }).ToArray();
     }
 

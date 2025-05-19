@@ -43,15 +43,13 @@ public sealed partial class RaiffeisenExpenseParser(IAppCultureProvider cultureP
 
                 var date = DateOnly.ParseExact(dateStr, "dd.MM.yyyy", cultureProvider.CurrentCulture);
 
-                return new ParsedExpenseDto
-                {
-                    Date = date,
-                    Place = place,
-                    Amount = amount,
-                    Currency = currency,
-                    TransactionId = transactionId,
-                    Source = stavka.ToString()
-                };
+                return new ParsedExpenseDto(
+                    Date: date,
+                    Place: place,
+                    Amount: amount,
+                    Currency: currency,
+                    TransactionId: transactionId,
+                    Source: stavka.ToString());
             })
             .Where(expense => expense != null)
             .ToArray()!;
