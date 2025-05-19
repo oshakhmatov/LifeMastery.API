@@ -1,6 +1,5 @@
 ﻿using LifeMastery.Domain.Abstractions;
 using LifeMastery.Health.Repositories;
-using System.Globalization;
 
 namespace LifeMastery.Health.Commands;
 
@@ -10,7 +9,7 @@ public sealed class RemoveWeightRecord(
 {
     public async Task Execute(Request request, CancellationToken token)
     {
-        var date = DateOnly.Parse(request.Date, new CultureInfo("ru-RU"));
+        var date = DateOnly.Parse(request.Date);
 
         var weightRecord = await weightRecords.FirstOrDefaultAsync(wr => wr.Date == date, token)
             ?? throw new Exception($"WeightRecord with Date={date} was not found");

@@ -1,7 +1,6 @@
-﻿using System.Reflection;
+﻿using LifeMastery.Domain.Abstractions;
+using System.Reflection;
 using System.Text.RegularExpressions;
-using LifeMastery.Domain.Abstractions;
-using Microsoft.AspNetCore.Routing;
 
 namespace LifeMastery.API;
 
@@ -73,7 +72,8 @@ public static partial class CommandEndpointMapper
             await command.Execute(request, ct);
             context.Response.StatusCode = StatusCodes.Status204NoContent;
         })
-        .WithName(typeof(TCommand).Name);
+        .WithName(typeof(TCommand).Name)
+        .WithOpenApi();
     }
 
     private static void MapCommandWithResponse<TCommand, TRequest, TResponse>(
@@ -101,7 +101,8 @@ public static partial class CommandEndpointMapper
 
             await context.Response.WriteAsJsonAsync(result, cancellationToken: ct);
         })
-        .WithName(typeof(TCommand).Name);
+        .WithName(typeof(TCommand).Name)
+        .WithOpenApi();
     }
 
     private static void MapCommandNoRequest<TCommand>(
@@ -117,7 +118,8 @@ public static partial class CommandEndpointMapper
             await command.Execute(ct);
             context.Response.StatusCode = StatusCodes.Status204NoContent;
         })
-        .WithName(typeof(TCommand).Name);
+        .WithName(typeof(TCommand).Name)
+        .WithOpenApi();
     }
 
     private static string ToKebabCase(string input)

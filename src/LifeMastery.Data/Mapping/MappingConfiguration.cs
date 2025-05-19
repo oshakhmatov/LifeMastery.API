@@ -44,6 +44,6 @@ public static class MappingConfiguration
             .Map(dest => dest.FamilyMemberId, src => src.FamilyMember!.Id);
 
         TypeAdapterConfig<WeightRecord, WeightRecordDto>.NewConfig()
-            .Map(dest => dest.Date, src => src.Date.ToString("dd.MM.yyyy", new CultureInfo("ru-RU")));
+            .Map(dest => dest.Date, src => src.Date.ToString("d"));
     }
 }

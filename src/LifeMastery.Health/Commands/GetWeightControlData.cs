@@ -30,7 +30,7 @@ public sealed class GetWeightControlData(
         {
             result.WeightChart = new WeightChartDto
             {
-                Labels = weightRecords.Select(r => r.Date.ToString("d MMMM", new CultureInfo("ru-RU"))).ToArray(),
+                Labels = weightRecords.Select(r => r.Date.ToString("d MMMM")).ToArray(),
                 Values = weightRecords.Select(r => r.Weight).ToArray()
             };
 

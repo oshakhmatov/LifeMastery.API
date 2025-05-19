@@ -6,6 +6,6 @@ public static class DateHelper
 {
     public static string GetMonthName(int month)
     {
-        return new CultureInfo("ru-RU").DateTimeFormat.GetMonthName(month);
+        return CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
     }
 }
