@@ -1,6 +1,4 @@
-﻿using LifeMastery.Finance.Models;
-
-namespace LifeMastery.Finance.DataTransferObjects;
+﻿namespace LifeMastery.Finance.DataTransferObjects;
 
 public class ExpenseCategoryDto
 {
@@ -9,16 +7,4 @@ public class ExpenseCategoryDto
     public required bool IsFood { get; init; }
     public required string? Color { get; init; }
     public required int? FamilyMemberId { get; init; }
-
-    public static ExpenseCategoryDto FromModel(ExpenseCategory expenseCategory)
-    {
-        return new ExpenseCategoryDto
-        {
-            Id = expenseCategory.Id,
-            Name = expenseCategory.Name,
-            IsFood = expenseCategory.IsFood,
-            Color = expenseCategory.Color,
-            FamilyMemberId = expenseCategory.FamilyMember?.Id
-        };
-    }
 }

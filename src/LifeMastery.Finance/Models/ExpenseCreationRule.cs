@@ -5,6 +5,7 @@ public class ExpenseCreationRule
     public int Id { get; private set; }
     public string Place { get; set; }
     public virtual ExpenseCategory Category { get; set; }
+    public int EmailSubscriptionId { get; set; }
 
     public ExpenseCreationRule(string place, ExpenseCategory category)
     {

@@ -1,4 +1,5 @@
-﻿using LifeMastery.Finance.Enums;
+﻿using LifeMastery.Common;
+using LifeMastery.Finance.Enums;
 
 namespace LifeMastery.Finance.Models;
 
@@ -114,6 +115,16 @@ public class RegularPayment
         }
 
         throw new NotImplementedException();
+    }
+
+    public decimal? GetApproximateAmount()
+    {
+        if (Amount != null || Payments.Count == 0)
+        {
+            return 0;
+        }
+
+        return MathHelper.Round(Payments.Average(p => p.Amount));
     }
 
     protected RegularPayment() { }

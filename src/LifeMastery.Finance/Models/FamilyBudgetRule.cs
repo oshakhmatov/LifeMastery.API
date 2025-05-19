@@ -16,5 +16,15 @@ public class FamilyBudgetRule
         PeriodMonth = periodMonth;
     }
 
+    public string GetContributionRatioName()
+    {
+        return ContributionRatio switch
+        {
+            ContributionRatio.Equal => "Поровну",
+            ContributionRatio.Proportional => "Пропорционально",
+            _ => throw new ArgumentOutOfRangeException(nameof(ContributionRatio), ContributionRatio, null)
+        };
+    }
+
     protected FamilyBudgetRule() { }
 }

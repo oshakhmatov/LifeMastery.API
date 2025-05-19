@@ -6,6 +6,7 @@ using LifeMastery.Finance.Services;
 namespace LifeMastery.Finance.Commands;
 
 public sealed class GetFinanceData(
+    IObjectMapper mapper,
     FinanceContextLoader contextLoader,
     BudgetRuleResolver ruleResolver,
     EarningsResolver earningsResolver,
@@ -59,22 +60,21 @@ public sealed class GetFinanceData(
                 .Select(g => new DailyExpensesDto
                 {
                     Date = g.Key.ToString("dd.MM.yyyy"),
-                    Expenses = g.Select(ExpenseDto.FromModel).ToArray()
+                    Expenses = mapper.Map<ExpenseDto[]>(g),
                 })
                 .ToArray(),
-            Currencies = context.Currencies.Select(CurrencyDto.FromModel).ToArray(),
-            FamilyMembers = context.FamilyMembers.Select(m => m.ToDto()).ToArray(),
-            Earnings = context.Earnings.Select(e => e.ToDto()).ToArray(),
-            FamilyBudgetRule = budgetRule.ToDto(),
+            Currencies = mapper.Map<CurrencyDto[]>(context.Currencies),
+            FamilyMembers = mapper.Map<FamilyMemberDto[]>(context.FamilyMembers),
+            Earnings = mapper.Map<EarningDto[]>(context.Earnings),
+            FamilyBudgetRule = mapper.Map<FamilyBudgetRuleDto>(budgetRule),
             AvailableContributionRatios = ["Поровну", "Пропорционально"],
             FamilyMemberBudgetStats = familyBudgetStats,
-            ExpenseCategories = context.Categories.Select(ExpenseCategoryDto.FromModel).ToArray(),
-            RegularPayments = context.RegularPayments
-                .Select(rp => rp.ToDto())
+            ExpenseCategories = mapper.Map<ExpenseCategoryDto[]>(context.Categories),
+            RegularPayments = mapper.Map<RegularPaymentDto[]>(context.RegularPayments)
                 .OrderBy(rp => rp.IsPaid)
                 .ThenBy(rp => rp.Name)
                 .ToArray(),
-            EmailSubscriptions = context.EmailSubscriptions.Select(es => es.ToDto()).ToArray(),
+            EmailSubscriptions = mapper.Map<EmailSubscriptionDto[]>(context.EmailSubscriptions),
             ExpenseChart = new ChartDto
             {
                 Labels = categorizedExpenses.Select(g => g.Key).ToArray(),
@@ -85,7 +85,7 @@ public sealed class GetFinanceData(
             CurrentCurrency = 0,
             CurrentExpenseMonth = Array.IndexOf(context.ExpenseMonths, context.ExpenseMonths.FirstOrDefault(m => m.Year == context.Year && m.Month == context.Month)),
             ExpenseMonths = context.ExpenseMonths,
-            Info = new FinanceInfoDto { Income = context.Info?.Income },
+            Info = mapper.Map<FinanceInfoDto>(context.Info),
             Statistics = statistics
         };
     }

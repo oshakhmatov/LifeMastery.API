@@ -8,6 +8,7 @@ using System.Globalization;
 namespace LifeMastery.Health.Commands;
 
 public sealed class GetWeightControlData(
+    IObjectMapper mapper,
     IRepository<HealthInfo> healthInfo,
     IWeightRecordRepository weightRecordRepository,
     IHealthService healthService,
@@ -21,8 +22,8 @@ public sealed class GetWeightControlData(
 
         var result = new WeightControlViewModel
         {
-            HealthInfo = healthInfoItem?.ToDto(),
-            LastWeightRecord = last?.ToDto()
+            HealthInfo = mapper.Map<HealthInfoDto>(healthInfoItem),
+            LastWeightRecord = mapper.Map<WeightRecordDto>(last)
         };
 
         if (weightRecords.Length > 0)
@@ -33,12 +34,7 @@ public sealed class GetWeightControlData(
                 Values = weightRecords.Select(r => r.Weight).ToArray()
             };
 
-            result.WeightRecords = weightRecords
-                .Reverse()
-                .Take(30)
-                .Select(wr => wr.ToDto())
-                .ToArray();
-
+            result.WeightRecords = mapper.Map<WeightRecordDto[]>(weightRecords.Reverse().Take(30));
             result.StatisticalData = statisticService.GetStatisticalData(weightRecords);
         }
 

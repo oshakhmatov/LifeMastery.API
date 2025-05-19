@@ -7,6 +7,7 @@ using LifeMastery.Infrastructure.Data;
 using LifeMastery.Infrastructure.Data.Repositories.AgendaRepositories;
 using LifeMastery.Infrastructure.Data.Repositories.FinanceRepositories;
 using LifeMastery.Infrastructure.Data.Repositories.HealthRepositories;
+using LifeMastery.Infrastructure.Mapping;
 using LifeMastery.Infrastructure.Options;
 using LifeMastery.Infrastructure.Services;
 using LifeMastery.Infrastructure.Services.Abstractions;
@@ -22,7 +23,10 @@ public static class ServiceCollectionExtensions
         services.Configure<DbOptions>(configuration.GetSection(nameof(DbOptions)));
         services.Configure<EmailProviderOptions>(configuration.GetSection(nameof(EmailProviderOptions)));
 
+        MappingConfiguration.Register();
+
         AddRepositories(services);
+        services.AddSingleton<IObjectMapper, MapsterAdapter>();
         services.AddTransient<IEmailProvider, EmailProvider>();
         services.AddSingleton<IAppCultureProvider, RsCultureProvider>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

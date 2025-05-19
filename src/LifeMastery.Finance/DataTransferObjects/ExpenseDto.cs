@@ -1,6 +1,4 @@
-﻿using LifeMastery.Finance.Models;
-
-namespace LifeMastery.Finance.DataTransferObjects;
+﻿namespace LifeMastery.Finance.DataTransferObjects;
 
 public class ExpenseDto
 {
@@ -13,21 +11,4 @@ public class ExpenseDto
     public required string? Note { get; init; }
     public required string? Source { get; init; }
     public required string? ParsedPlace { get; init; }
-
-    public static ExpenseDto FromModel(Expense expense)
-    {
-        return new ExpenseDto
-        {
-            Id = expense.Id,
-            Amount = expense.Amount,
-            CategoryId = expense.Category?.Id,
-            CurrencyId = expense.Currency?.Id,
-            CategoryName = expense.Category?.Name,
-            Note = expense.Note,
-            Date = expense.Date,
-            //Source = expense.Source,
-            Source = expense.ParsedPlace,
-            ParsedPlace = expense.ParsedPlace
-        };
-    }
 }

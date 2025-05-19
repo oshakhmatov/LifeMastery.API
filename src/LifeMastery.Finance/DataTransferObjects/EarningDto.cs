@@ -1,6 +1,4 @@
-﻿using LifeMastery.Finance.Models;
-
-namespace LifeMastery.Finance.DataTransferObjects;
+﻿namespace LifeMastery.Finance.DataTransferObjects;
 
 public sealed class EarningDto
 {
@@ -9,19 +7,4 @@ public sealed class EarningDto
     public required string FamilyMemberName { get; init; }
     public required int PeriodYear { get; init; }
     public required int PeriodMonth { get; init; }
-}
-
-public static class EarningProjections
-{
-    public static EarningDto ToDto(this Earning model)
-    {
-        return new EarningDto
-        {
-            Id = model.Id,
-            Amount = model.Amount,
-            FamilyMemberName = model.FamilyMember.Name,
-            PeriodMonth = model.PeriodMonth,
-            PeriodYear = model.PeriodYear
-        };
-    }
 }
