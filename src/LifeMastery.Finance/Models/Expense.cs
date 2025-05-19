@@ -24,5 +24,5 @@ public class Expense
     }
 
     public int CurrencyId { get; private set; }
-    public int? CategoryId { get; private set; }
+    public int? CategoryId { get; set; }
 }

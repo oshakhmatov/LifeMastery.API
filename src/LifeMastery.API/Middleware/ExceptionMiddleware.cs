@@ -22,7 +22,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
             logger.LogError(ex, "Unhandled exception");
             await WriteErrorAsync(context, HttpStatusCode.InternalServerError, "Unexpected error occurred.");
         }
-    }
+   }
 
     private static async Task WriteErrorAsync(HttpContext context, HttpStatusCode code, string message)
     {

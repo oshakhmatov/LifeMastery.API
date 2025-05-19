@@ -3,7 +3,7 @@ using LifeMastery.ScenariusTests.TestSupport;
 using Scenarius;
 using System.Net;
 
-namespace LifeMastery.ScenariusTests.FinanceTests;
+namespace LifeMastery.ScenariusTests.FinanceTests.ExpenseCategories;
 
 public class RemoveExpenseCategoryTests : TestBase
 {
@@ -11,10 +11,10 @@ public class RemoveExpenseCategoryTests : TestBase
     public Task Should_Remove_Empty_ExpenseCategory()
     {
         return RunScenario(s => s
-            .Given(new ExpenseCategory("Empty", isFood: false).With("Id", 10))
-            .Post("/remove-expense-category", new { Id = 10 })
+            .Given(new ExpenseCategory("Empty", isFood: false), out var categoryId)
+            .Post("/remove-expense-category", new { Id = categoryId })
             .ExpectStatus(HttpStatusCode.NoContent)
-            .ExpectDb<ExpenseCategory>(Should.BeEmpty<ExpenseCategory>())
+            .ExpectDb(Should.BeEmpty<ExpenseCategory>())
         );
     }
 
@@ -22,14 +22,12 @@ public class RemoveExpenseCategoryTests : TestBase
     public Task Should_Reject_Removal_If_Category_Has_Expenses()
     {
         return RunScenario(s => s
-            .Given(new Expense(20m, new Currency("USD"))
-            {
-                Category = new ExpenseCategory("Food", isFood: true).With("Id", 10)
-            })
-            .Post("/remove-expense-category", new { Id = 10 })
+            .Given(new ExpenseCategory("Food", isFood: true), out var categoryId)
+            .Given(new Expense(20m, new Currency("USD")) { CategoryId = categoryId }, out _)
+            .Post("/remove-expense-category", new { Id = categoryId })
             .ExpectStatus(HttpStatusCode.BadRequest)
-            .ExpectErrorMessage("Expense category with ID '10' cannot be removed because it contains expenses.")
-            .ExpectDb<ExpenseCategory>(Should.Contain<ExpenseCategory>(c => c.Id == 10))
+            .ExpectErrorMessage($"Expense category with ID '{categoryId}' cannot be removed because it contains expenses.")
+            .ExpectDb(Should.Contain<ExpenseCategory>(c => c.Id == categoryId))
         );
     }
 
@@ -40,7 +38,7 @@ public class RemoveExpenseCategoryTests : TestBase
             .Post("/remove-expense-category", new { Id = 999 })
             .ExpectStatus(HttpStatusCode.BadRequest)
             .ExpectErrorMessage("Expense category with ID '999' was not found.")
-            .ExpectDb<ExpenseCategory>(Should.BeEmpty<ExpenseCategory>())
+            .ExpectDb(Should.BeEmpty<ExpenseCategory>())
         );
     }
 }

@@ -1,20 +1,14 @@
 ﻿using FluentAssertions;
-using LifeMastery.Finance.Models;
-using LifeMastery.ScenariusTests.TestSupport;
-using Scenarius;
-using System.Net;
 
-namespace LifeMastery.ScenariusTests.FinanceTests;
+namespace LifeMastery.ScenariusTests.FinanceTests.ExpenseTests;
 
 public class UpsertExpenseTests : TestBase
 {
     [Fact]
     public Task Should_Create_Expense_With_Currency_And_Without_Category()
     {
-        var currencyId = 1;
-
         return RunScenario(s => s
-            .Given(new Currency("USD").With("Id", currencyId))
+            .Given(new Currency("USD"), out var currencyId)
             .Post("/upsert-expense", new
             {
                 Amount = 12.5m,
@@ -34,12 +28,9 @@ public class UpsertExpenseTests : TestBase
     [Fact]
     public Task Should_Create_Expense_With_Category_And_Currency()
     {
-        var currencyId = 1;
-        var categoryId = 2;
-
         return RunScenario(s => s
-            .Given(new Currency("USD").With("Id", currencyId))
-            .Given(new ExpenseCategory("Food", isFood: true).With("Id", categoryId))
+            .Given(new Currency("USD"), out var currencyId)
+            .Given(new ExpenseCategory("Food", isFood: true), out var categoryId)
             .Post("/upsert-expense", new
             {
                 Amount = 99,
@@ -70,17 +61,15 @@ public class UpsertExpenseTests : TestBase
             })
             .ExpectStatus(HttpStatusCode.BadRequest)
             .ExpectErrorMessage("Currency with ID '999' was not found.")
-            .ExpectDb<Expense>(Should.BeEmpty<Expense>())
+            .ExpectDb(Should.BeEmpty<Expense>())
         );
     }
 
     [Fact]
     public Task Should_Reject_Expense_With_Invalid_Category()
     {
-        var currencyId = 1;
-
         return RunScenario(s => s
-            .Given(new Currency("USD").With("Id", currencyId))
+            .Given(new Currency("USD"), out var currencyId)
             .Post("/upsert-expense", new
             {
                 Amount = 25,
@@ -91,17 +80,15 @@ public class UpsertExpenseTests : TestBase
             })
             .ExpectStatus(HttpStatusCode.BadRequest)
             .ExpectErrorMessage("Expense category with ID '999' was not found.")
-            .ExpectDb<Expense>(Should.BeEmpty<Expense>())
+            .ExpectDb(Should.BeEmpty<Expense>())
         );
     }
 
     [Fact]
     public Task Should_Reject_Update_Of_Nonexistent_Expense()
     {
-        var currencyId = 1;
-
         return RunScenario(s => s
-            .Given(new Currency("USD").With("Id", currencyId))
+            .Given(new Currency("USD"), out var currencyId)
             .Post("/upsert-expense", new
             {
                 Id = 999,
@@ -112,7 +99,7 @@ public class UpsertExpenseTests : TestBase
             })
             .ExpectStatus(HttpStatusCode.BadRequest)
             .ExpectErrorMessage("Expense with ID '999' was not found.")
-            .ExpectDb<Expense>(Should.BeEmpty<Expense>())
+            .ExpectDb(Should.BeEmpty<Expense>())
         );
     }
 }

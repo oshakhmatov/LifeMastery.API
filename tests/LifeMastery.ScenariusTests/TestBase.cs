@@ -1,11 +1,13 @@
 ﻿using LifeMastery.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Scenarius;
 
 namespace LifeMastery.ScenariusTests;
 
 public abstract class TestBase
 {
+    private readonly string dbName = Guid.NewGuid().ToString();
+
     private static readonly ScenarioOptions DefaultScenarioOptions = new()
     {
         ErrorMessagePath = "message"
@@ -15,7 +17,6 @@ public abstract class TestBase
 
     protected TestBase()
     {
-        var dbName = Guid.NewGuid().ToString();
         Factory = new LifeMasteryApiFactory(dbName);
     }
 
@@ -25,7 +26,10 @@ public abstract class TestBase
         var scope = Factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var builder = new ScenarioBuilder(client, db, DefaultScenarioOptions);
+        var builder = new ScenarioBuilder(
+            client,
+            () => new AppDbContext(new DbContextOptionsBuilder().UseInMemoryDatabase(dbName).UseLazyLoadingProxies().Options), 
+            DefaultScenarioOptions);
         var scenario = configure(builder);
 
         await scenario.ExecuteAsync();

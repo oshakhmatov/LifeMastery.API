@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
-using Scenarius;
-using System;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http.Json;
@@ -9,7 +7,7 @@ using System.Text.Json;
 
 namespace Scenarius;
 
-public class ScenarioBuilder(HttpClient client, DbContext db, ScenarioOptions? options = null)
+public class ScenarioBuilder(HttpClient client, Func<DbContext> dbFactory, ScenarioOptions? options = null)
 {
     private readonly List<Func<Task>> _given = [];
     private readonly List<Func<Task>> _actions = [];
@@ -17,15 +15,12 @@ public class ScenarioBuilder(HttpClient client, DbContext db, ScenarioOptions? o
     private HttpResponseMessage? _lastResponse;
     private readonly ScenarioOptions _options = options ?? new ScenarioOptions();
 
-    public static ScenarioBuilder New(HttpClient client, DbContext db, ScenarioOptions? options = null) => new(client, db, options);
-
-    public ScenarioBuilder Given<T>(T entity) where T : class
+    public ScenarioBuilder Given<T>(T entity, out int id) where T : class
     {
-        _given.Add(async () =>
-        {
-            db.Set<T>().Add(entity);
-            await db.SaveChangesAsync();
-        });
+        using var db = dbFactory();
+        db.Set<T>().Add(entity);
+        db.SaveChanges();
+        id = (int)typeof(T).GetProperty("Id")!.GetValue(entity)!;
         return this;
     }
 
@@ -82,6 +77,7 @@ public class ScenarioBuilder(HttpClient client, DbContext db, ScenarioOptions? o
     {
         _asserts.Add(async () =>
         {
+            using var db = dbFactory();
             var data = await db.Set<T>().ToListAsync();
             assert(data);
         });

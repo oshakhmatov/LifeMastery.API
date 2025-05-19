@@ -17,6 +17,10 @@ public sealed class AppDbContext : DbContext, IUnitOfWork
         this.optionsSnapshot = optionsSnapshot;
     }
 
+    public AppDbContext(DbContextOptions options) : base(options)
+    {
+    }
+
     public DbSet<Job> Jobs { get; set; }
     public DbSet<WeightRecord> WeightRecords { get; set; }
     public DbSet<HealthInfo> HealthInfos { get; set; }

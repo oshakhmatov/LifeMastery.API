@@ -1,9 +1,4 @@
-﻿using LifeMastery.Finance.Models;
-using Scenarius;
-using System.Net;
-using LifeMastery.ScenariusTests.TestSupport;
-
-namespace LifeMastery.ScenariusTests.FinanceTests;
+﻿namespace LifeMastery.ScenariusTests.FinanceTests.ExpenseTests;
 
 public class RemoveExpenseTests : TestBase
 {
@@ -11,11 +6,10 @@ public class RemoveExpenseTests : TestBase
     public Task Should_Remove_Existing_Expense()
     {
         return RunScenario(s => s
-            .Given(new Expense(45, new Currency("USD").With("Id", 1))
-                .With("Id", 10))
-            .Post("/remove-expense", new { Id = 10 })
+            .Given(new Expense(45, new Currency("USD")), out var expenseId)
+            .Post("/remove-expense", new { Id = expenseId })
             .ExpectStatus(HttpStatusCode.NoContent)
-            .ExpectDb<Expense>(Should.BeEmpty<Expense>())
+            .ExpectDb(Should.BeEmpty<Expense>())
         );
     }
 
@@ -26,7 +20,7 @@ public class RemoveExpenseTests : TestBase
             .Post("/remove-expense", new { Id = 999 })
             .ExpectStatus(HttpStatusCode.BadRequest)
             .ExpectErrorMessage("Expense with ID '999' was not found.")
-            .ExpectDb<Expense>(Should.BeEmpty<Expense>())
+            .ExpectDb(Should.BeEmpty<Expense>())
         );
     }
 }
