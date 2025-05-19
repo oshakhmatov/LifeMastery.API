@@ -1,9 +1,4 @@
-﻿using LifeMastery.Finance.Models;
-using LifeMastery.ScenariusTests.TestSupport;
-using Scenarius;
-using System.Net;
-
-namespace LifeMastery.ScenariusTests.FinanceTests.ExpenseCategories;
+﻿namespace LifeMastery.ScenariusTests.FinanceTests.ExpenseCategories;
 
 public class RemoveExpenseCategoryTests : TestBase
 {
