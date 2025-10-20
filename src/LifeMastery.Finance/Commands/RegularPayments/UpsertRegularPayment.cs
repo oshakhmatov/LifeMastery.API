@@ -20,6 +20,7 @@ public sealed class UpsertRegularPayment(
             payment.Amount = request.Amount;
             payment.IsAdvanced = request.IsAdvanced;
             payment.IsTax = request.IsTax;
+            payment.IsActive = request.IsActive;
             payment.PayFromDay = request.PayFromDay;
             payment.SetDeadline(request.DeadlineDay, request.DeadlineMonth);
         }
@@ -29,6 +30,7 @@ public sealed class UpsertRegularPayment(
                 request.Name,
                 request.IsAdvanced,
                 request.IsTax,
+                request.IsActive,
                 request.Period,
                 request.DeadlineDay,
                 request.DeadlineMonth,
@@ -48,5 +50,6 @@ public sealed class UpsertRegularPayment(
         int? DeadlineMonth,
         int? PayFromDay,
         bool IsAdvanced,
-        bool IsTax);
+        bool IsTax,
+        bool IsActive);
 }

@@ -9,18 +9,17 @@ public class RaiffeisenExpenseParserTests
     [Fact]
     public void AmountWithCommaAndDot_ReturnsCorrectlyParsedAmount()
     {
-        var expected = new ParsedExpenseDto
-        {
-            Amount = 1430.70m,
-            Date = new DateOnly(2024, 1, 18),
-            Place = "Mikromarket 110 Novi Sad RS",
-            Currency = "RSD",
-            TransactionId = "367114926249",
-            Source = @"<Stavke DatumValute=""18.01.2024"" 
+        var expected = new ParsedExpenseDto(
+            1430.70m,
+            "Mikromarket 110 Novi Sad RS",
+            "RSD",
+            new DateOnly(2024, 1, 18),
+            "367114926249",
+            @"<Stavke DatumValute=""18.01.2024"" 
                     NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
                     Opis=""535683******9996 / Iznos transakcije: 1.430,70 u valuti RSD"" 
                     Referenca=""367114926249"" />"
-        };
+        );
 
         var cut = new RaiffeisenExpenseParser(new RsCultureProvider());
 
@@ -45,18 +44,17 @@ public class RaiffeisenExpenseParserTests
     [Fact]
     public void AmountWithDot_ReturnsCorrectlyParsedAmount()
     {
-        var expected = new ParsedExpenseDto
-        {
-            Amount = 430.70m,
-            Date = new DateOnly(2024, 1, 18),
-            Place = "Mikromarket 110 Novi Sad RS",
-            Currency = "RSD",
-            TransactionId = "367114926249",
-            Source = @"<Stavke DatumValute=""18.01.2024"" 
+        var expected = new ParsedExpenseDto(
+            430.70m,
+            "Mikromarket 110 Novi Sad RS",
+            "RSD",
+            new DateOnly(2024, 1, 18),
+            "367114926249",
+            @"<Stavke DatumValute=""18.01.2024"" 
                     NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
                     Opis=""535683******9996 / Iznos transakcije: 430.70 u valuti RSD"" 
                     Referenca=""367114926249"" />"
-        };
+        );
 
         var cut = new RaiffeisenExpenseParser(new RsCultureProvider());
 
@@ -81,18 +79,17 @@ public class RaiffeisenExpenseParserTests
     [Fact]
     public void AmountWithComma_ReturnsCorrectlyParsedAmount()
     {
-        var expected = new ParsedExpenseDto
-        {
-            Amount = 901.29m,
-            Date = new DateOnly(2024, 1, 18),
-            Place = "Mikromarket 110 Novi Sad RS",
-            Currency = "RSD",
-            TransactionId = "367114926250",
-            Source = @"<Stavke DatumValute=""18.01.2024"" 
+        var expected = new ParsedExpenseDto(
+            901.29m,
+            "Mikromarket 110 Novi Sad RS",
+            "RSD",
+            new DateOnly(2024, 1, 18),
+            "367114926250",
+            @"<Stavke DatumValute=""18.01.2024"" 
                     NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
                     Opis=""535683******9996 / Iznos transakcije: 901,29 u valuti RSD"" 
                     Referenca=""367114926250"" />"
-        };
+        );
 
         var cut = new RaiffeisenExpenseParser(new RsCultureProvider());
 
@@ -117,18 +114,17 @@ public class RaiffeisenExpenseParserTests
     [Fact]
     public void CommonInput_ReturnsCorrectlyParsedValues()
     {
-        var expected = new ParsedExpenseDto
-        {
-            Amount = 901.29m,
-            Date = new DateOnly(2024, 1, 18),
-            Place = "Mikromarket 110 Novi Sad RS",
-            Currency = "RSD",
-            TransactionId = "367114926251",
-            Source = @"<Stavke DatumValute=""18.01.2024"" 
+        var expected = new ParsedExpenseDto(
+            901.29m,
+            "Mikromarket 110 Novi Sad RS",
+            "RSD",
+            new DateOnly(2024, 1, 18),
+            "367114926251",
+            @"<Stavke DatumValute=""18.01.2024"" 
                     NalogKorisnik=""Mikromarket 110 Novi Sad RS"" 
                     Opis=""535683******9996 / Iznos transakcije: 901,29 у valuti RSD"" 
                     Referenca=""367114926251"" />"
-        };
+        );
 
         var cut = new RaiffeisenExpenseParser(new RsCultureProvider());
 

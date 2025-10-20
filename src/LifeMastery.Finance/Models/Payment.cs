@@ -9,7 +9,7 @@ public class Payment
     public decimal Amount { get; set; }
     public int PeriodYear { get; set; }
     public int? PeriodMonth { get; set; }
-    public int RegularPaymentId { get; set; }
+    public int? RegularPaymentId { get; set; }
 
     public Payment(decimal amount, DateOnly date, int periodYear, int? periodMonth)
     {

@@ -23,6 +23,6 @@ public class Expense
         Date = DateOnly.FromDateTime(DateTime.Today);
     }
 
-    public int CurrencyId { get; private set; }
+    public int? CurrencyId { get; private set; }
     public int? CategoryId { get; set; }
 }

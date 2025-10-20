@@ -14,4 +14,5 @@ public record RegularPaymentDto(
     bool IsAdvanced,
     bool IsPaid,
     bool IsTax,
+    bool IsActive,
     PaymentDto[] Payments);

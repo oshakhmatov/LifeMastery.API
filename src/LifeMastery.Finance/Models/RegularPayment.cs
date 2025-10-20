@@ -14,10 +14,11 @@ public class RegularPayment
     public int? PayFromDay { get; set; }
     public bool IsAdvanced { get; set; }
     public bool IsTax { get; set; }
+    public bool IsActive { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = [];
 
-    public RegularPayment(string name, bool isAdvanced, bool isTax, Period period, int? deadlineDay, int? deadlineMonth, decimal? amount, int? payFromDay)
+    public RegularPayment(string name, bool isAdvanced, bool isTax, bool isActive, Period period, int? deadlineDay, int? deadlineMonth, decimal? amount, int? payFromDay)
     {
         Name = name;
         Amount = amount;
@@ -25,6 +26,7 @@ public class RegularPayment
         IsAdvanced = isAdvanced;
         PayFromDay = payFromDay;
         IsTax = isTax;
+        IsActive = isActive;
 
         SetDeadline(deadlineDay, deadlineMonth);
     }

@@ -69,7 +69,8 @@ public sealed class GetFinanceData(
             ContributionChart: contributionChart,
             AvailableContributionRatios: ["Поровну", "Пропорционально"],
             RegularPayments: mapper.Map<RegularPaymentDto[]>(context.RegularPayments)
-                .OrderBy(rp => rp.IsPaid)
+                .OrderByDescending(rp => rp.IsActive)
+                .ThenBy(rp => rp.IsPaid)
                 .ThenBy(rp => rp.Name)
                 .ToArray(),
             EmailSubscriptions: mapper.Map<EmailSubscriptionDto[]>(context.EmailSubscriptions),
