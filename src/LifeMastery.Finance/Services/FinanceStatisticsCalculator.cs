@@ -6,27 +6,30 @@ namespace LifeMastery.Finance.Services;
 
 public class FinanceStatisticsCalculator
 {
-    public FinanceStatisticsDto? Calculate(decimal income, Expense[] expenses, Expense[] food, Payment[] taxes)
+    public FinanceStatisticsDto? Calculate(decimal income, Expense[] expenses, Expense[] food, Payment[] payments, Payment[] taxPayments)
     {
-        if (income == 0 || (expenses.Length == 0 && taxes.Length == 0))
+        if (income == 0 || (expenses.Length == 0 && payments.Length == 0))
             return null;
 
         return new FinanceStatisticsDto(
-            RemainingAmountPercent: CalcRemaining(income, expenses, taxes),
+            RemainingAmountPercent: CalcRemaining(income, expenses, payments),
             FoodSpendingPercent: CalcPercent(income, [.. food.Select(f => f.Amount)]),
-            OverallTaxPercent: CalcPercent(income, [.. taxes.Select(t => t.Amount)]));
+            OverallTaxPercent: CalcPercent(income, [.. taxPayments.Select(t => t.Amount)]));
         
     }
 
     private static decimal? CalcRemaining(decimal income, Expense[] expenses, Payment[] taxes)
     {
-        var total = expenses.Sum(e => e.Amount) + taxes.Sum(p => p.Amount);
-        return 100 - MathHelper.Round(total / income * 100);
+        var totalExpenses = expenses.Sum(e => e.Amount);
+        var totalTaxes = taxes.Sum(p => p.Amount);
+        var totalSpending = totalExpenses + totalTaxes;
+        
+        return 100 - MathHelper.Round(totalSpending / income * 100);
     }
 
     private static decimal? CalcPercent(decimal income, decimal[] values)
     {
-        if (values.Length != 0)
+        if (values.Length == 0)
             return null;
 
         return MathHelper.Round(values.Sum() / income * 100);

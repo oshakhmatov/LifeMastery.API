@@ -20,13 +20,17 @@ public sealed class GetFinanceData(
         context = context with { Earnings = await earningsResolver.Resolve(context.Earnings, context.FamilyMembers, context.Year, context.Month, token) };
         await unitOfWork.Commit(token);
 
-        var expenses = context.Expenses;
-        var categorizedExpenses = expenses
+        var categorizedExpenses = context.Expenses
             .Where(e => e.Category is not null)
             .GroupBy(e => e.Category!.Name)
             .OrderByDescending(g => g.Sum(e => e.Amount));
 
         var periodPayments = context.RegularPayments
+            .SelectMany(rp => rp.Payments)
+            .Where(p => p.PeriodYear == context.Year && p.PeriodMonth == context.Month)
+            .ToArray();
+
+        var payments = context.RegularPayments
             .SelectMany(rp => rp.Payments)
             .Where(p => p.PeriodYear == context.Year && p.PeriodMonth == context.Month)
             .ToArray();
@@ -38,10 +42,12 @@ public sealed class GetFinanceData(
             .ToArray();
 
         var statistics = statisticsCalculator.Calculate(
-            context.Earnings.Sum(e => e.Amount),
-            context.Expenses,
-            context.FoodExpenses,
-            taxPayments
+            income: context.Earnings.Sum(e => e.Amount),
+            expenses: context.Expenses,
+            food: context.FoodExpenses,
+            payments: payments,
+            taxPayments: taxPayments
+
         );
 
         var contributionChart = GetFinanceDataHelper.BuildContributionChart(budgetRule.ContributionRatio, context.Earnings);
@@ -53,11 +59,11 @@ public sealed class GetFinanceData(
         );
 
         return new FinanceViewModel(
-            MonthTotal: MathHelper.Round(expenses.Sum(e => e.Amount)),
+            MonthTotal: MathHelper.Round(context.Expenses.Sum(e => e.Amount)),
             CurrentExpenseMonth: Array.IndexOf(context.ExpenseMonths, context.ExpenseMonths.FirstOrDefault(m => m.Year == context.Year && m.Month == context.Month)),
             CurrentCurrency: 0,
             ExpenseMonths: context.ExpenseMonths,
-            DailyExpenses: expenses
+            DailyExpenses: context.Expenses
                 .GroupBy(e => e.Date)
                 .Select(g => new DailyExpensesDto(g.Key.ToString("d"), mapper.Map<ExpenseDto[]>(g)))
                 .ToArray(),
