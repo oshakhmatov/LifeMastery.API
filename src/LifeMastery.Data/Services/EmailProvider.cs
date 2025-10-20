@@ -42,7 +42,7 @@ public class EmailProvider(IOptionsSnapshot<EmailProviderOptions> optionsSnapsho
         await client.AuthenticateAsync(options.UserName, options.Password, cancellationToken);
 
         var inbox = await client.GetFolderAsync("INBOX", cancellationToken);
-        await inbox.OpenAsync(FolderAccess.ReadOnly, cancellationToken);
+        await inbox.OpenAsync(FolderAccess.ReadWrite, cancellationToken);
 
         var query = SearchQuery.SubjectContains("Expenses");
         var uids = await inbox.SearchAsync(query, cancellationToken);

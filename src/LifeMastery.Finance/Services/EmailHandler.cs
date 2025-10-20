@@ -12,15 +12,15 @@ public class EmailHandler(
     IRepository<EmailSubscription> emailSubscriptions,
     IRepository<Currency> currencies)
 {
-    public async Task HandleInbox(CancellationToken cancellationToken)
+    public async Task HandleInbox(CancellationToken token)
     {
-        var emailSubs = await emailSubscriptions.ListAsync(es => es.IsActive, cancellationToken);
+        var emailSubs = await emailSubscriptions.ListAsync(es => es.IsActive, token);
         if (emailSubs.Length == 0)
             return;
 
         foreach (var emailSub in emailSubs)
         {
-            var messages = await emailProvider.GetMessages(emailSub.Email, cancellationToken);
+            var messages = await emailProvider.GetMessages(emailSub.Email, token);
 
             foreach (var content in messages)
             {
@@ -37,13 +37,13 @@ public class EmailHandler(
 
                 foreach (var parsedExpense in parsedExpenses)
                 {
-                    var existingExpense = await expenses.FirstOrDefaultAsync(e => e.TransactionId == parsedExpense.TransactionId, cancellationToken);
+                    var existingExpense = await expenses.FirstOrDefaultAsync(e => e.TransactionId == parsedExpense.TransactionId, token);
                     if (existingExpense != null)
                     {
                         continue;
                     }
 
-                    var currency = await currencies.FirstOrDefaultAsync(c => c.Name == parsedExpense.Currency, cancellationToken)
+                    var currency = await currencies.FirstOrDefaultAsync(c => c.Name == parsedExpense.Currency, token)
                         ?? throw new ApplicationException($"Currency '{parsedExpense.Currency}' was not found.");
 
                     var expense = new Expense(parsedExpense.Amount, currency)
@@ -69,9 +69,11 @@ public class EmailHandler(
             }
         }
 
+        await unitOfWork.Commit(token);
+
         foreach (var emailSub in emailSubs)
         {
-            await emailProvider.RemoveMessages(emailSub.Email, cancellationToken);
+            await emailProvider.RemoveMessages(emailSub.Email, token);
         }
     }
 }
