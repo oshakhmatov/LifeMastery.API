@@ -46,7 +46,8 @@ public sealed class GetFinanceData(
             expenses: context.Expenses,
             food: context.FoodExpenses,
             payments: payments,
-            taxPayments: taxPayments
+            taxPayments: taxPayments,
+            regularPayments: context.RegularPayments
 
         );
 

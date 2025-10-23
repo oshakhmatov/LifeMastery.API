@@ -3,4 +3,5 @@
 public record FinanceStatisticsDto(
     decimal? RemainingAmountPercent,
     decimal? FoodSpendingPercent,
-    decimal? OverallTaxPercent);
+    decimal? OverallTaxPercent,
+    FinanceItemDto[] Items);
